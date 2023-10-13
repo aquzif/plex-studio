@@ -14,10 +14,10 @@ import moment from "moment";
 
 const getShowCompletionPercentage = (show) => {
     let total = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
-        return acc + season.episodes.length;
+        return acc + season.episodes.filter(e => e.release_date && moment(e.release_date).isBefore(moment())).length;
     },0);
     let downloaded = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
-        return acc + season.episodes.filter((episode) => episode.downloaded).length;
+        return acc + season.episodes.filter((e) => e.downloaded && e.release_date && moment(e.release_date).isBefore(moment())).length;
     },0);
 
     if(show.type === 'movie'){
