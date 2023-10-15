@@ -48,7 +48,7 @@ const AddLinksDialog = ({open,onClose,progress = false,progressValue = 0,showTyp
 
                 const res = link;
                 //search inside res for SXXEYY pattern
-                const regex = /S\d{2}E\d{2}/g;
+                const regex = /[Ss]\d{2}[Ee]\d{2}/g;
                 const match = res.match(regex);
                 if(!match) continue;
 
