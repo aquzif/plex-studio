@@ -21,6 +21,10 @@ class ShowController extends Controller
         return $show;
     }
 
+    public function getByTvdbID(Show $show){
+        return $show;
+    }
+
     public function store(Request $request)
     {
         $fields = $request->validate([

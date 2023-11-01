@@ -14,7 +14,15 @@ import {
 } from "@mui/material";
 import {alpha} from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
-import {Add, ConnectingAirports, Delete, Download, ErrorOutline, Extension} from "@mui/icons-material";
+import {
+    Add,
+    CheckCircleOutline,
+    ConnectingAirports,
+    Delete,
+    Download,
+    ErrorOutline,
+    Extension
+} from "@mui/icons-material";
 import AddLinksDialog from "@/Dialogs/AddLinksDialog.jsx";
 import {useState} from "react";
 import {array} from "yup";
@@ -23,6 +31,7 @@ import SeriesAPI from "@/API/SeriesAPI.js";
 import styled from "styled-components";
 import EpisodesAPI from "@/API/EpisodesAPI.js";
 import toast from "react-hot-toast";
+import QualityPill from "@/Components/QualityPill.jsx";
 
 const Link = styled.a`
   color: #fff;
@@ -266,7 +275,9 @@ const UrlsView = () => {
                     <Table sx={{ minWidth: 650 }} aria-label="simple table" size="small">
                         <TableHead>
                             <TableRow>
+                                <TableCell></TableCell>
                                 <TableCell>Link</TableCell>
+                                <TableCell>Quality</TableCell>
                                 <TableCell align="right">Tools</TableCell>
                             </TableRow>
                         </TableHead>
@@ -277,12 +288,24 @@ const UrlsView = () => {
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell component="th" scope="row">
+                                        <Tooltip title={
+                                            <span>Ostatnie sprawdzenie: <br/> {new Date(row.last_validated_date).toLocaleDateString()} {new Date(row.last_validated_date).toLocaleTimeString()}</span>
+                                        }>
+                                            <CheckCircleOutline
+                                                sx={{color: row.auto_valid ? 'lightGreen' : 'red'}}
+                                            />
+                                        </Tooltip>
+                                    </TableCell>
+                                    <TableCell component="th" scope="row">
 
                                         <Link
                                             style={{wordBreak: 'break-all',
                                                 color: row.invalid ? 'red' : (row.downloaded ? 'lightGreen' : 'white')
                                             }}
                                             target={'_blank'} href={row.url} >{row.url}</Link>
+                                    </TableCell>
+                                    <TableCell>
+                                        <QualityPill quality={row.quality} />
                                     </TableCell>
                                     <TableCell align="right">
                                         <div style={{display: 'flex',flexDirection: 'row',justifyContent:'right'}} >

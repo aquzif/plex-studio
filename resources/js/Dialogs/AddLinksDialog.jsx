@@ -58,7 +58,6 @@ const AddLinksDialog = ({open,onClose,progress = false,progressValue = 0,showTyp
                 const episodeNumber = parseInt(e);
 
                 if(toReturn.filter((season) =>  season?.season == seasonNumber).length === 0){
-                    console.log('adding season ' + seasonNumber)
                     toReturn = [...toReturn,{
                         season: seasonNumber,
                         episodes: []

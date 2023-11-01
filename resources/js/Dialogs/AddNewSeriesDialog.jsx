@@ -77,6 +77,14 @@ const AddNewSeriesDialog = ({open,onClose}) => {
         let res = results[id];
         let tvdb_id = res.id.split('-')[1];
 
+        //check if already added
+        let exists = await SeriesAPI.checkIfAdded(tvdb_id);
+
+        if(exists){
+            toast.error('Serial już istnieje');
+            return;
+        }
+
         if(res.type === 'series'){
             setSelectedShow(res);
 

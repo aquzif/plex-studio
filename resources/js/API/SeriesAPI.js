@@ -8,6 +8,17 @@ export default class SeriesAPI {
         return await RequestUtils.apiGet('/api/show');
     }
 
+    static async checkIfAdded(tvdb_id){
+
+        try{
+            const res = await RequestUtils.apiGet(`/api/show/exists/${tvdb_id}`);
+        }catch (e) {
+            return false;
+        }
+        return true;
+    }
+
+
     static async addNewShow(data){
         return await RequestUtils.apiPost('/api/show',data);
     }

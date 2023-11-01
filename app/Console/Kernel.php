@@ -14,6 +14,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('sync:tvdb')->dailyAt('12:00');
+
+        $schedule->command('urlcheck:wplik')->everyMinute();
     }
 
     /**

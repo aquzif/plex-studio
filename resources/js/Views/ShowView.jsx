@@ -30,7 +30,7 @@ const ShowView = () => {
     const navigate = useNavigate();
 
     const selectedShow = shows.data.find(show => show.id === parseInt(id));
-    console.log(selectedShow);
+
     const onSelectSeries = (seasonId) => {
         navigate('/show/' + id + '/season/' + seasonId);
     }

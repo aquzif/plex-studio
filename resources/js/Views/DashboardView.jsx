@@ -86,6 +86,25 @@ const DashboardView = () => {
         store.dispatch(searchbarUpdate(searchValue));
     }, [searchValue])
 
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if(e.altKey && e.key === 's'){
+                e.preventDefault();
+                document.getElementById('search-input').focus();
+            }
+            if(e.altKey && e.key === 'x'){
+                e.preventDefault();
+                setSettingsOpen(!settingsOpen);
+            }
+        }
+        document.addEventListener('keydown',handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown',handleKeyDown);
+        }
+    }, []);
+
+
     const handleGoUp = () => {
         if(matchesSeasons)
             navigate(`/show/${matchesSeasons.params.id}`);
@@ -154,6 +173,7 @@ const DashboardView = () => {
                                 <SearchIcon />
                             </SearchIconWrapper>
                             <StyledInputBase
+                                id={'search-input'}
                                 value={searchValue}
                                 onChange={(e) => setSearchValue(e.target.value)}
                                 placeholder="Search…"

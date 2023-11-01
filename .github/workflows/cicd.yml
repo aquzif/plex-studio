@@ -1,0 +1,43 @@
+name: CI
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: 'placeholder'
+      - run: echo $(ssh-keyscan -p 222 ${{ secrets.SERVER_HOST }} )
+      - name: Adding Known Hosts
+        run: ssh-keyscan -p 222 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - uses: actions/checkout@v3
+      - name: Update composer dependencies
+        run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: Install composer Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: Install node dependencies
+        run: npm install --force
+      - name: Build assets
+        run: npm run build
+      - name: Remove unnesesary files
+        run: |
+          rm -rf node_modules
+      - name: Remove unnesesary files
+        run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && rm -r ./public/build/*"
+      - name: Deploy to server
+        run: rsync -e 'ssh -p 222' -avz  . ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }}:${{ secrets.SSH_DEPLOY_PATH }}
+      - name: Migrate database
+        run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && php81 artisan migrate --force"

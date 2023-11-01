@@ -11,6 +11,8 @@ import {useNavigate} from "react-router-dom";
 import TileTooltip from "@/Components/TileTooltip.jsx";
 import toast from "react-hot-toast";
 import moment from "moment";
+import {updateSettings} from "@/Store/Reducers/SettingsReducer.js";
+import store from "@/Store/store.js";
 
 const getShowCompletionPercentage = (show) => {
     let total = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
@@ -36,7 +38,7 @@ const getShowCompletionPercentage = (show) => {
     }
 
 
-    return Math.round(downloaded/total * 100);
+    return Math.round(downloaded/total * 100) || 0;
 }
 
 const SeriesList = () => {
@@ -48,7 +50,6 @@ const SeriesList = () => {
     const searchValue = useSelector(state => state.searchbarReducer);
     const settings = useSelector(state => state.settingsReducer);
 
-    const [tab,setTab] = useState(0);
 
     const navigate = useNavigate();
 
@@ -167,7 +168,9 @@ const SeriesList = () => {
     }
 
     const changeTab = (event,value) => {
-        setTab(value);
+        store.dispatch(updateSettings({
+            activeMainTab: value
+        }))
     }
 
     return <>
@@ -183,7 +186,7 @@ const SeriesList = () => {
             style={{display: 'flex', justifyContent: 'center'}}
         >
             <div style={{width: '100px'}} />
-            <Tabs value={tab} onChange={changeTab} centered >
+            <Tabs value={settings.activeMainTab} onChange={changeTab} centered >
                 <Tab label="Seriale" value={0}  />
                 <Tab label="Filmy" value={1}  />
                 {/*<Tab label="Item Three" value={2} />*/}
@@ -193,7 +196,7 @@ const SeriesList = () => {
         <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
             {
                 prepareDataToShow().filter(s => (
-                    tab === 0 && s.type === 'series') || (tab === 1 && s.type === 'movie')
+                    settings.activeMainTab === 0 && s.type === 'series') || (settings.activeMainTab === 1 && s.type === 'movie')
                 ).map((show,index) => {
 
                     let completion = getShowCompletionPercentage(show);

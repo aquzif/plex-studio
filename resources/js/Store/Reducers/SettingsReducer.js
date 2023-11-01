@@ -10,6 +10,7 @@ const initialState = {
     showOnlyNotCompleted: false,
     sortBy: 'name',
     sortDirection: 'asc',
+    activeMainTab: 0,
 
     //episodes
     hideDownloadedEpisodes: false,

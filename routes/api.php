@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function(){
     Route::resource('show', ShowController::class)->except(['create', 'edit']);
+    Route::get('show/exists/{show:tvdb_id}', [ShowController::class,'getByTvdbID']);
     Route::resource('season', SeasonController::class)->except(['create', 'edit']);
     Route::get('tvdb/search', [TvDBController::class,'search']);
     Route::get('tvdb/show/{id}/seasons', [TvDBController::class,'seasons']);

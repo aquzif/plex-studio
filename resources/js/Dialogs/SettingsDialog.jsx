@@ -57,7 +57,6 @@ const SettingsDialog = (
     });
 
     useEffect(() => {
-        console.log(formik.values);
         store.dispatch(updateSettings(formik.values));
     }, [formik.values]);
 

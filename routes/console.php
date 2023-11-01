@@ -5,9 +5,11 @@ use App\Models\Episode;
 use App\Models\Season;
 use App\Utils\ImageUtils;
 use App\Utils\TvDBUtils;
+use App\Utils\WPlikUtils;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Intervention\Image\Image;
+use App\Models\Url;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +21,88 @@ use Intervention\Image\Image;
 | simple approach to interacting with each command's IO methods.
 |
 */
+
+Artisan::command('fix:urls',function (){
+    $urls = Url::all();
+    foreach ($urls as $url) {
+        $url->quality = \App\Utils\UrlUtils::getQualityFromUrl($url->url);
+        $url->save();
+    }
+});
+
+Artisan::command('urlcheck:wrzucaj',function () {
+
+    $urls = Url::where(
+        'host',
+        'wrzucaj.pl'
+    )->where('downloaded',false)
+        ->where('last_validated_date',
+            '<',
+            \Carbon\Carbon::now()->subHours(24)
+        )->orderBy('last_validated_date')->get();
+
+    $i=0;
+
+    foreach ($urls as $url) {
+        $i++;
+        if ($i > 50) break;
+        if($url->episode()->count() > 0){
+            if($url->episode()->first()['downloaded'] === true) continue;
+        }
+        $client = new \GuzzleHttp\Client([
+            'headers' => [
+                // ...
+                'User-Agent'   => 'curl/7.65.3',
+            ],
+        ]);
+        $data = $client->request('GET',$url->url);
+
+        dd($data);
+
+    }
+
+});
+Artisan::command('urlcheck:wplik',function (){
+    $urls = Url::where(
+        'host',
+        'wplik.com'
+    )->where('downloaded',false)
+    ->where('last_validated_date',
+        '<',
+        \Carbon\Carbon::now()->subHours(24)
+    )->orderBy('last_validated_date')->get();
+
+    $codesToCheck = [];
+    $urlsToUpdate = [];
+
+    foreach ($urls as $url) {
+
+        if($url->episode()->count() > 0){
+            if($url->episode()->first()['downloaded'] === true) continue;
+        }
+        $codesToCheck[] = explode('/',$url->url)[3];
+        $urlsToUpdate[] = $url;
+    }
+    if($codesToCheck === []) return;
+
+    $codesToCheck = array_slice($codesToCheck,0,50);
+
+    $result = WPlikUtils::checkUrls($codesToCheck);
+
+
+    foreach ($urlsToUpdate as $urls) {
+        foreach ($result['result'] as $res) {
+            if(str_contains($urls->url,$res['filecode'])){
+                $urls->last_validated_date = now();
+                $urls->auto_valid = $res['status'] !== 404;
+                $urls->update();
+            }
+
+
+        }
+    }
+
+});
 
 Artisan::command('fix_thumbs',function (){
     $shows = \App\Models\Show::all();
@@ -207,3 +291,4 @@ Artisan::command('sync:tvdb',function (){
     Artisan::call('fix_thumbs');
 
 });
+

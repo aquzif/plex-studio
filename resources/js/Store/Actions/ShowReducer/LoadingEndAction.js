@@ -11,7 +11,7 @@ const showLoadEnd = (state, action) => {
 
         let first_release = '';
         let last_release = '';
-        console.log(show);
+
         show.seasons.map((season) => {
             if(season.season_order_number == '0') return;
             season.episodes.map((episode) => {
@@ -31,7 +31,7 @@ const showLoadEnd = (state, action) => {
         };
 
     });
-    console.log(data);
+
     return {
         ...state,
         data,
