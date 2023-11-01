@@ -35,9 +35,11 @@ jobs:
       - name: Remove unnesesary files
         run: |
           rm -rf node_modules
-      - name: Remove unnesesary files
+      - name: Remove unnesesary files on server side
         run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && rm -r ./public/build/*"
       - name: Deploy to server
         run: rsync -e 'ssh -p 222' -avz  . ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }}:${{ secrets.SSH_DEPLOY_PATH }}
+      - name: chmod files
+        run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && chmod -R 755 ."
       - name: Migrate database
         run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && php81 artisan migrate --force"
