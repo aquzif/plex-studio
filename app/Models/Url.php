@@ -26,6 +26,7 @@ class Url extends Model
         'downloaded' => 'boolean',
         'invalid' => 'boolean',
         'auto_valid' => 'boolean',
+
     ];
 
     public function episode(){

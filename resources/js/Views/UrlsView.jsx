@@ -2,15 +2,17 @@ import {useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import Typography from "@mui/material/Typography";
 import {
+    Autocomplete, Chip, FormControlLabel, FormGroup,
     IconButton,
-    Paper,
+    Paper, Switch,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow,
-    Tooltip
+    TableRow, TextField,
+    Tooltip,
+
 } from "@mui/material";
 import {alpha} from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
@@ -32,6 +34,7 @@ import styled from "styled-components";
 import EpisodesAPI from "@/API/EpisodesAPI.js";
 import toast from "react-hot-toast";
 import QualityPill from "@/Components/QualityPill.jsx";
+import SeasonsAPI from "@/API/SeasonsAPI.js";
 
 const Link = styled.a`
   color: #fff;
@@ -203,31 +206,205 @@ const UrlsView = () => {
             onClose={onAddLinksClose}
             open={linksDialogOpen}
         />
-        <div style={{marginTop: '50px',display:'flex',flexDirection:'row',justifyContent: 'space-between'}} >
-            <Typography variant="h4" component="h1" gutterBottom>
-                {selectedShow?.name} {selectedShow?.type == 'series' && ' - '} {selectedSeason?.name}
-            </Typography>
-            <div>
-                {
-                    selectedShow?.type == 'series' &&  <IconButton
-                        style={{color: anyDownloaded && '#d62929' || 'lightgreen'}}
-                        onClick={() => toast.promise(toggleAllEpisodes(), {
-                            loading: 'Zmieniam status wszystkich odcinków',
-                            success: 'Zmieniono status wszystkich odcinków',
-                            error: 'Wystąpił błąd podczas zmiany statusu wszystkich odcinków'
-                        })
-                        }
+        <Paper style={{padding: '20px',marginTop: '50px'}} >
+            <div style={{display:'flex',flexDirection:'row',justifyContent: 'space-between'}} >
+                <Typography variant="h4" component="h1" gutterBottom>
+                    {selectedShow?.name} {selectedShow?.type == 'series' && ' - '} {selectedSeason?.name}
+                </Typography>
+                <div>
+                    {
+                        selectedShow?.type == 'series' &&  <IconButton
+                            style={{color: anyDownloaded && '#d62929' || 'lightgreen'}}
+                            onClick={() => toast.promise(toggleAllEpisodes(), {
+                                loading: 'Zmieniam status wszystkich odcinków',
+                                success: 'Zmieniono status wszystkich odcinków',
+                                error: 'Wystąpił błąd podczas zmiany statusu wszystkich odcinków'
+                            })
+                            }
+                        >
+                            <Download />
+                        </IconButton>
+                    }
+                    <IconButton
+                        onClick={() => setLinksDialogOpen(true)}
                     >
-                        <Download />
+                        <Add />
                     </IconButton>
-                }
-                <IconButton
-                    onClick={() => setLinksDialogOpen(true)}
-                >
-                    <Add />
-                </IconButton>
+                </div>
             </div>
-        </div>
+            <div style={{display:'flex',flexDirection:'row',justifyContent: 'space-between'}} >
+                <div style={{width: 'calc(60% - 20px)'}} >
+                    <Autocomplete
+                        multiple
+                        id="tags-standard"
+                        fullWidth={true}
+                        renderTags={(value, getTagProps) =>
+                            value.map((option, index) => (
+                                <Chip
+                                    key={index}
+                                    variant="outlined"
+                                    label={option.title}
+                                    sx={{fontWeight: 'bold',color: option.title !== "Angielski" ? '#ffbf00' : '#8a00ff'}}
+                                    {...getTagProps({ index })}
+                                />
+                            ))
+                        }
+                        options={[
+                            { ord:1, title: 'Dubbing' },
+                            { ord:2,title: 'Lektor' },
+                            { ord:3,title: 'Angielski' },
+                        ]}
+                        getOptionLabel={(option) => option.title}
+                        value={
+                            selectedShow?.type == 'movie' ? JSON.parse(selectedShow.audio_languages) : JSON.parse(selectedSeason?.audio_languages || '[]')
+                        }
+                        isOptionEqualToValue={(option, value) => option.title === value.title}
+                        onChange={(event, newValue) => {
+
+                            (selectedShow?.type == 'movie' ? SeriesAPI.updateShow({
+                                id: selectedShow.id,
+                                audio_languages: JSON.stringify(newValue.sort(
+                                    (a,b) => a.ord - b.ord
+                                ))
+                            }) : SeasonsAPI.updateSeason({
+                                id: selectedSeason.id,
+                                audio_languages: JSON.stringify(newValue.sort(
+                                    (a,b) => a.ord - b.ord
+                                ))
+                            })).then(() => SeriesAPI.refreshSeries());
+
+
+                            console.log(newValue);
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label="Języki Audio"
+                            />
+                        )}
+                    />
+                </div>
+                <div style={{width: '40%'}} >
+                    <Autocomplete
+                        multiple
+                        id="tags-standard"
+                        fullWidth={true}
+                        renderTags={(value, getTagProps) =>
+                                value.map((option, index) => (
+                                    <Chip
+                                        key={index}
+                                    variant="outlined"
+                                    label={option.title}
+                                    sx={{fontWeight: 'bold',color: option.title === "Polski" ? '#ffbf00' : '#8a00ff'}}
+                                    {...getTagProps({ index })}
+                                />
+                            ))
+                        }
+                        options={[
+                            { ord:1, title: 'Polski' },
+                            { ord:2, title: 'Angielski' },
+                        ]}
+                        getOptionLabel={(option) => option.title}
+
+                        value={
+                            selectedShow?.type == 'movie' ? JSON.parse(selectedShow.subtitle_languages) : JSON.parse(selectedSeason?.subtitle_languages || '[]')
+                        }
+                        isOptionEqualToValue={(option, value) => option.title === value.title}
+                        onChange={(event, newValue) => {
+
+                            (selectedShow?.type == 'movie' ? SeriesAPI.updateShow({
+                                id: selectedShow.id,
+                                subtitle_languages: JSON.stringify(newValue.sort(
+                                    (a,b) => a.ord - b.ord
+                                ))
+                            }) : SeasonsAPI.updateSeason({
+                                id: selectedSeason.id,
+                                subtitle_languages: JSON.stringify(newValue.sort(
+                                    (a,b) => a.ord - b.ord
+                                ))
+                            })).then(() => SeriesAPI.refreshSeries());
+
+                        }}
+                        renderInput={(params) => (<TextField{...params} label="Języki Napisów"/>)}
+                    />
+                </div>
+            </div>
+            <div style={{display:'flex',flexDirection:'row',justifyContent: 'space-between', marginTop: '20px'}} >
+                <div >
+                    <Autocomplete
+                        getOptionLabel={(option) => option === 'undef' ? 'Nieznana' : option}
+                        value={
+                            selectedShow?.type == 'movie' ? selectedShow?.quality : selectedSeason?.quality || 'undef'
+                        }
+                        options={[
+                            'undef',
+                            '480p',
+                            '720p',
+                            '1080p',
+                            '2160p',
+                        ]}
+                        isOptionEqualToValue={(option, value) => option === value}
+                        sx={{ width: 300 }}
+                        renderOption={(props, option, { selected }) => (
+                            <li {...props}>
+                                <span
+                                    style={{
+                                        color: (option === "undef" && '#878787') ||
+                                            (option === "480p" && '#008900') ||
+                                            (option === "720p" && '#00bfff') ||
+                                            (option === "1080p" && '#8a00ff') ||
+                                            (option === "2160p" && '#ffbf00') || 'white'
+                                    }}
+                                >{
+                                    (option === "undef" && 'Nieznana') || option
+                                }</span>
+                            </li>
+                        )}
+                        onChange={(event, newValue) => {
+
+                            (selectedShow?.type == 'movie' ? SeriesAPI.updateShow({
+                                id: selectedShow.id,
+                                quality: newValue
+                            }) : SeasonsAPI.updateSeason({
+                                id: selectedSeason.id,
+                                quality: newValue
+                            })).then(() => SeriesAPI.refreshSeries());
+
+                        }}
+
+
+                        renderInput={(params) =>
+                            <TextField {...params}
+                                       label="Jakość"
+                                       sx={{ input: { fontWeight:'bold',color:
+                                                   (params.inputProps.value === 'Nieznana' && '#878787') ||
+                                                    (params.inputProps.value === '480p' && '#008900') ||
+                                                    (params.inputProps.value === '720p' && '#00bfff') ||
+                                                    (params.inputProps.value === '1080p' && '#8a00ff') ||
+                                                    (params.inputProps.value === '2160p' && '#ffbf00') || 'white'
+                                       } }}
+
+                        />}
+                        />
+                </div>
+                <div>
+                    <FormGroup>
+                        <FormControlLabel control={<Switch
+                            checked={selectedShow?.type == 'movie' ? selectedShow?.needs_update : selectedSeason?.needs_update || false}
+                            onChange={(e) => {
+                                (selectedShow?.type == 'movie' ? SeriesAPI.updateShow({
+                                    id: selectedShow.id,
+                                    needs_update: e.target.checked
+                                }) : SeasonsAPI.updateSeason({
+                                    id: selectedSeason.id,
+                                    needs_update: e.target.checked
+                                })).then(() => SeriesAPI.refreshSeries());
+                            }}
+                        />} labelPlacement={'start'} label="Wymagana poprawa" />
+                    </FormGroup>
+                </div>
+            </div>
+        </Paper>
 
         {
             (

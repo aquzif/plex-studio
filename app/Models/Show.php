@@ -17,12 +17,17 @@ class Show extends Model
         'thumb_path',
         'downloaded',
         'favourite',
-        'seasons_type'
+        'seasons_type',
+        'quality',
+        'needs_update',
+        'audio_languages',
+        'subtitle_languages',
     ];
 
     protected $casts = [
         'downloaded' => 'boolean',
         'favourite' => 'boolean',
+        'needs_update' => 'boolean',
     ];
 
     public function seasons(){

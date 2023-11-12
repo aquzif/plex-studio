@@ -15,11 +15,12 @@ class Episode extends Model
         'tvdb_id',
         'downloaded',
         'episode_order_number',
-        'release_date'
+        'release_date', 'quality', 'needs_update', 'audio_languages', 'subtitle_languages'
     ];
 
     protected $casts = [
         'downloaded' => 'boolean',
+        'needs_update' => 'boolean',
     ];
 
     public function urls(){

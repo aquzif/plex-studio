@@ -16,6 +16,11 @@ class Season extends Model
         'name',
         'season_order_number',
         'thumb_path',
+        'quality', 'needs_update', 'audio_languages', 'subtitle_languages',
+    ];
+
+    protected $casts = [
+        'needs_update' => 'boolean',
     ];
 
     public function episodes(){

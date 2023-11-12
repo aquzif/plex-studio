@@ -34,6 +34,7 @@ export default class SeriesAPI {
     static refreshSeries(){
         store.dispatch(loadShows());
         SeriesAPI.getSeries().then(data => {
+            console.devlog(data.data)
             store.dispatch(endLoading(data.data));
         });
     }

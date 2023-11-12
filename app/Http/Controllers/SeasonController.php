@@ -31,14 +31,16 @@ class SeasonController extends Controller
 
     public function update(Request $request, Season $season)
     {
-        $request->validate([
-            'show_id' => ['required', 'integer'],
-            'name' => ['required'],
-            'season_order_number' => ['required', 'integer'],
-            'thumb_path' => ['required'],
-        ]);
 
-        $season->update($request->validated());
+        $fields = $request->validate([
+            'name' => ['string'],
+            'season_order_number' => ['integer'],
+            'quality' => ['string','in:undef,480p,720p,1080p,2160p'],
+            'needs_update' => ['boolean'],
+            'audio_languages' => ['json'],
+            'subtitle_languages' => ['json'],
+        ]);
+        $season->update($fields);
 
         return $season;
     }

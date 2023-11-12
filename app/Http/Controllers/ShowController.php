@@ -119,6 +119,10 @@ class ShowController extends Controller
             'type' => ['in:series,movie'],
             'downloaded' => ['boolean'],
             'favourite' => ['boolean'],
+            'quality' => ['string','in:undef,480p,720p,1080p,2160p'],
+            'needs_update' => ['boolean'],
+            'audio_languages' => ['json'],
+            'subtitle_languages' => ['json'],
             //'thumb_path' => ['required'],
         ]);
 
