@@ -440,14 +440,73 @@ const UrlsView = () => {
                                 formatReleaseDate(episode.release_date)
                             }
                         </Typography>
-                        <Tooltip title={`Oznacz jako ${episode.downloaded && 'nie' || ''}pobrany`}>
-                            <IconButton
-                                style={{color: episode.downloaded && '#d62929' || 'lightgreen'}}
-                                onClick={() => toggleEpisodeDownload(episode)}
-                            >
-                                <Download />
-                            </IconButton>
-                        </Tooltip>
+                        <div style={{display: 'flex',flexDirection: 'row'}} >
+                            {
+                                selectedShow?.type !== 'movie' && <Autocomplete
+                                    getOptionLabel={(option) => option === 'undef' ? 'Nieznana' : option}
+                                    size="small"
+                                    value={
+                                        episode.quality || 'undef'
+                                    }
+                                    options={[
+                                        'undef',
+                                        '480p',
+                                        '720p',
+                                        '1080p',
+                                        '2160p',
+                                    ]}
+                                    isOptionEqualToValue={(option, value) => option === value}
+                                    sx={{ width: 300 }}
+                                    renderOption={(props, option, { selected }) => (
+                                        <li {...props}>
+                                <span
+                                    style={{
+                                        color: (option === "undef" && '#878787') ||
+                                            (option === "480p" && '#008900') ||
+                                            (option === "720p" && '#00bfff') ||
+                                            (option === "1080p" && '#8a00ff') ||
+                                            (option === "2160p" && '#ffbf00') || 'white'
+                                    }}
+                                >{
+                                    (option === "undef" && 'Nieznana') || option
+                                }</span>
+                                        </li>
+                                    )}
+                                    onChange={(event, newValue) => {
+
+                                        EpisodesAPI.updateEpisode({
+                                            id: episode.id,
+                                            quality: newValue
+                                        }).then(() => SeriesAPI.refreshSeries());
+
+                                    }}
+
+
+                                    renderInput={(params) =>
+                                        <TextField {...params}
+                                                   label="Jakość"
+                                                   variant="standard"
+                                                   sx={{ input: { fontWeight:'bold',color:
+                                                               (params.inputProps.value === 'Nieznana' && '#878787') ||
+                                                               (params.inputProps.value === '480p' && '#008900') ||
+                                                               (params.inputProps.value === '720p' && '#00bfff') ||
+                                                               (params.inputProps.value === '1080p' && '#8a00ff') ||
+                                                               (params.inputProps.value === '2160p' && '#ffbf00') || 'white'
+                                                       } }}
+
+                                        />}
+                                />
+                            }
+                            <Tooltip title={`Oznacz jako ${episode.downloaded && 'nie' || ''}pobrany`}>
+                                <IconButton
+                                    style={{color: episode.downloaded && '#d62929' || 'lightgreen'}}
+                                    onClick={() => toggleEpisodeDownload(episode)}
+                                >
+                                    <Download />
+                                </IconButton>
+                            </Tooltip>
+                        </div>
+
                     </Toolbar>
                     <Table sx={{ minWidth: 650 }} aria-label="simple table" size="small">
                         <TableHead>
