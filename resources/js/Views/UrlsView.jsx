@@ -35,6 +35,7 @@ import EpisodesAPI from "@/API/EpisodesAPI.js";
 import toast from "react-hot-toast";
 import QualityPill from "@/Components/QualityPill.jsx";
 import SeasonsAPI from "@/API/SeasonsAPI.js";
+import ConfirmDialog from "@/Dialogs/ConfirmDialog.jsx";
 
 const Link = styled.a`
   color: #fff;
@@ -44,6 +45,7 @@ const UrlsView = () => {
 
     const [linksDialogOpen,setLinksDialogOpen] = useState(false);
     const [progressValue,setProgressValue] = useState(0);
+    const [confirmOverrideDialog, setConfirmOverrideDialog] = useState(false);
 
     const shows = useSelector(state => state.showReducer);
     const {id,season} = useParams();
@@ -198,6 +200,34 @@ const UrlsView = () => {
         window.open(`/xt7/?url=${row.url}`, '_blank');
     }
 
+
+    const updateEpisodesQuality = async (newValue) => {
+        for(let episode of selectedSeason.episodes){
+            await EpisodesAPI.updateEpisode({
+                id: episode.id,
+                quality: newValue
+            });
+        }
+        await SeriesAPI.refreshSeries();
+    }
+
+    const confirmDialogClose = async (res) => {
+        if(!res) {
+            setConfirmOverrideDialog(false);
+            return;
+        }
+
+        await toast.promise(updateEpisodesQuality(selectedSeason.quality), {
+            loading: 'Zmieniam jakość wszystkich odcinków',
+            success: 'Zmieniono jakość wszystkich odcinków',
+            error: 'Wystąpił błąd podczas zmiany jakości wszystkich odcinków'
+        });
+        setConfirmOverrideDialog(false);
+
+    }
+
+
+
     return <>
         <AddLinksDialog
             progress={progressValue > 0}
@@ -205,6 +235,12 @@ const UrlsView = () => {
             progressValue={progressValue}
             onClose={onAddLinksClose}
             open={linksDialogOpen}
+        />
+        <ConfirmDialog
+            open={confirmOverrideDialog}
+            onClose={confirmDialogClose}
+            title={"Czy chcesz zaktualizować linki?"}
+
         />
         <Paper style={{padding: '20px',marginTop: '50px'}} >
             <div style={{display:'flex',flexDirection:'row',justifyContent: 'space-between'}} >
@@ -271,7 +307,10 @@ const UrlsView = () => {
                                 audio_languages: JSON.stringify(newValue.sort(
                                     (a,b) => a.ord - b.ord
                                 ))
-                            })).then(() => SeriesAPI.refreshSeries());
+                            })).then(async () =>{
+                                SeriesAPI.refreshSeries();
+
+                            });
 
 
                             console.log(newValue);
@@ -368,7 +407,13 @@ const UrlsView = () => {
                             }) : SeasonsAPI.updateSeason({
                                 id: selectedSeason.id,
                                 quality: newValue
-                            })).then(() => SeriesAPI.refreshSeries());
+                            })).then(() => {
+                                SeriesAPI.refreshSeries()
+                                console.log(selectedShow?.type);
+                                if(selectedShow?.type !== 'movie'){
+                                    setConfirmOverrideDialog(true);
+                                }
+                            });
 
                         }}
 
