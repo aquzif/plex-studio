@@ -76,10 +76,10 @@ const UrlsView = () => {
             for(let s of res){
 
                 const sea = selectedShow.seasons.filter(season => season.season_order_number == s.season)[0];
-
+                if(!sea) continue;
                 for(let e of s.episodes){
                     const ep = sea.episodes.filter(episode => episode.episode_order_number == e.episode)[0];
-
+                    if(!ep) continue;
                     for(let l of e.links){
                         count++;
 

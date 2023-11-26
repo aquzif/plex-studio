@@ -1,11 +1,7 @@
-import {useEffect, useState} from "react";
-import {useDebounce} from "use-debounce";
-import TvDBAPI from "@/API/TvDBAPI.js";
-import toast from "react-hot-toast";
-import SeriesAPI from "@/API/SeriesAPI.js";
+import {useState} from "react";
+
 import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, LinearProgress, TextField} from "@mui/material";
-import ShowTile from "@/Components/ShowTile.jsx";
-import * as Yup from "yup";
+import { ray } from 'node-ray/web';
 import Typography from "@mui/material/Typography";
 
 function LinearProgressWithLabel(props) {
@@ -57,6 +53,7 @@ const AddLinksDialog = ({open,onClose,progress = false,progressValue = 0,showTyp
                 const seasonNumber = parseInt(s);
                 const episodeNumber = parseInt(e);
 
+
                 if(!episodeNumber) continue;
 
                 if(toReturn.filter((season) =>  season?.season == seasonNumber).length === 0){
@@ -93,6 +90,7 @@ const AddLinksDialog = ({open,onClose,progress = false,progressValue = 0,showTyp
                 });
 
         }
+        ray().toJson(toReturn);
         onClose(toReturn);
     }
 
