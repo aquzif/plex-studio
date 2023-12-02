@@ -45,6 +45,8 @@ const getShowCompletionPercentage = (show) => {
     }else{
         for(let season of show.seasons){
 
+            if(season.season_order_number === 0) continue;
+
             let any_released = season.episodes.filter((episode) => episode.release_date && moment(episode.release_date).isBefore(moment())).length > 0;
             let any_downloaded = season.episodes.filter((episode) => episode.downloaded).length > 0;
 
