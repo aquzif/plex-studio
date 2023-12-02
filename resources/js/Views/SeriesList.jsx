@@ -24,13 +24,12 @@ const getIsReleased = (show) => {
     return show.seasons.filter((season) => season.episodes.filter((episode) => episode.release_date && moment(episode.release_date).isBefore(moment())).length > 0).length > 0;
 }
 const getShowCompletionPercentage = (show) => {
-    let total = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
-        return acc + season.episodes.filter(e => e.release_date && moment(e.release_date).isBefore(moment())).length;
-    },0);
-    let downloaded = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
-        return acc + season.episodes.filter((e) => e.downloaded).length;
-    },0);
-    
+
+    let total = 0;
+    let downloaded = 0;
+
+
+
 
     if(show.type === 'movie'){
         if(show.downloaded){
@@ -43,8 +42,24 @@ const getShowCompletionPercentage = (show) => {
             total = show.urls.length;
             downloaded = show.urls.filter((url) => url.downloaded).length;
         }
+    }else{
+        for(let season of show.seasons){
 
+            let any_released = season.episodes.filter((episode) => episode.release_date && moment(episode.release_date).isBefore(moment())).length > 0;
+            let any_downloaded = season.episodes.filter((episode) => episode.downloaded).length > 0;
 
+            for(let episode of season.episodes){
+                let is_downloaded = episode.downloaded;
+
+                if(any_released || any_downloaded){
+                    total++;
+                    if(is_downloaded){
+                        downloaded++;
+                    }
+                }
+
+            }
+        }
     }
 
 
