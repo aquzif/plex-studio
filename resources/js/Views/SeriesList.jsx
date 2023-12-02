@@ -30,12 +30,7 @@ const getShowCompletionPercentage = (show) => {
     let downloaded = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
         return acc + season.episodes.filter((e) => e.downloaded).length;
     },0);
-
-    if(downloaded > 0){
-        total = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
-            return acc + season.episodes.length;
-        },0);
-    }
+    
 
     if(show.type === 'movie'){
         if(show.downloaded){
