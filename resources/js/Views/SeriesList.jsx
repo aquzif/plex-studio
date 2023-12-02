@@ -18,7 +18,9 @@ import {ray} from "node-ray/web";
 
 const getIsReleased = (show) => {
 
-    //if any episode is downloaded, show is released
+
+    if(show.type === 'movie')
+        return true;
     if(show.seasons.filter((season) => season.episodes.filter((episode) => episode.downloaded).length > 0).length > 0) return true;
 
     return show.seasons.filter((season) => season.episodes.filter((episode) => episode.release_date && moment(episode.release_date).isBefore(moment())).length > 0).length > 0;
