@@ -13,14 +13,29 @@ import toast from "react-hot-toast";
 import moment from "moment";
 import {updateSettings} from "@/Store/Reducers/SettingsReducer.js";
 import store from "@/Store/store.js";
+import {ray} from "node-ray/web";
 
+
+const getIsReleased = (show) => {
+
+    //if any episode is downloaded, show is released
+    if(show.seasons.filter((season) => season.episodes.filter((episode) => episode.downloaded).length > 0).length > 0) return true;
+
+    return show.seasons.filter((season) => season.episodes.filter((episode) => episode.release_date && moment(episode.release_date).isBefore(moment())).length > 0).length > 0;
+}
 const getShowCompletionPercentage = (show) => {
     let total = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
         return acc + season.episodes.filter(e => e.release_date && moment(e.release_date).isBefore(moment())).length;
     },0);
     let downloaded = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
-        return acc + season.episodes.filter((e) => e.downloaded && e.release_date && moment(e.release_date).isBefore(moment())).length;
+        return acc + season.episodes.filter((e) => e.downloaded).length;
     },0);
+
+    if(downloaded > 0){
+        total = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
+            return acc + season.episodes.length;
+        },0);
+    }
 
     if(show.type === 'movie'){
         if(show.downloaded){
@@ -51,16 +66,19 @@ const SeriesList = () => {
     const settings = useSelector(state => state.settingsReducer);
 
 
+
     const navigate = useNavigate();
 
     const prepareDataToShow = () => {
+
         let data = shows.data.map((show) => {
           return {
               ...show,
-              completion: getShowCompletionPercentage(show)
+              completion: getShowCompletionPercentage(show),
+              released: getIsReleased(show),
           }
         });
-
+        console.log(data)
         if(settings.showOnlyNotCompleted){
             data = data.filter((show) => {
                 return show.completion !== 100;
@@ -118,8 +136,10 @@ const SeriesList = () => {
                 return (datea > dateb ? 1 : -1) * sortDirection;
             });
 
-            data = [...data,...movies];
+            data = [...notReleased,...movies];
         }
+
+
 
         data = SearchUtils.advancedSearch(data || [],searchValue);
         return data;
@@ -197,7 +217,16 @@ const SeriesList = () => {
             {
                 prepareDataToShow().filter(s => (
                     settings.activeMainTab === 0 && s.type === 'series') || (settings.activeMainTab === 1 && s.type === 'movie')
-                ).map((show,index) => {
+                )
+
+                    //move unreleased to the end
+                    .sort((a,b) => {
+                        if(!a.released && b.released) return 1;
+                        if(a.released && !b.released) return -1;
+                        return 0;
+                    })
+
+                    .map((show,index) => {
 
                     let completion = getShowCompletionPercentage(show);
 
@@ -206,8 +235,8 @@ const SeriesList = () => {
                         name={show.name}
                     >
                        <ShowTile
-                           text={completion + '%'}
-                            borderColor={completion === 100 ? 'green' :
+                           text={show.released ? `${completion}%` : 'N/A'}
+                            borderColor={!show.released ? 'gray' : completion === 100 ? 'green' :
                                 completion > 0 ? 'orange' : 'red'}
                            showBorder={true}
                            onFavoriteClick={onFavoriteClick}
