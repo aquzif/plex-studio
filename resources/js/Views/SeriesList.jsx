@@ -25,9 +25,6 @@ const getIsReleased = (show) => {
 }
 const getShowCompletionPercentage = (show) => {
     let total = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
-        //if there are no downloaded and not released episodes, return 0
-        if(season.episodes.filter(e => e.downloaded).length === 0 && season.episodes.filter(e => e.release_date && moment(e.release_date).isBefore(moment())).length === 0) return 0;
-
         return acc + season.episodes.filter(e => e.release_date && moment(e.release_date).isBefore(moment())).length;
     },0);
     let downloaded = show.seasons.filter(s=>parseInt(s.season_order_number)).reduce((acc,season) => {
