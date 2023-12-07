@@ -43,7 +43,7 @@ const ShowView = () => {
         return (
             <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
                 {
-                    SearchUtils.advancedSearch(selectedShow?.seasons || [],searchValue).map((show,index) => {
+                    (selectedShow?.seasons || []).map((show,index) => {
                         return <TileTooltip
                             key={show.id}
                             name={show.name}
