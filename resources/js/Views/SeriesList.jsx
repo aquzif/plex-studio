@@ -13,7 +13,6 @@ import toast from "react-hot-toast";
 import moment from "moment";
 import {updateSettings} from "@/Store/Reducers/SettingsReducer.js";
 import store from "@/Store/store.js";
-import {ray} from "node-ray/web";
 
 
 const getIsReleased = (show) => {
@@ -92,17 +91,19 @@ const SeriesList = () => {
               released: getIsReleased(show),
           }
         });
-        console.log(data)
-        if(settings.showOnlyNotCompleted){
-            data = data.filter((show) => {
-                return show.completion !== 100;
-            });
+        if(searchValue === ''){
+            if(settings.showOnlyNotCompleted){
+                data = data.filter((show) => {
+                    return show.completion !== 100;
+                });
+            }
+            if(settings.showOnlyFavorites){
+                data = data.filter((show) => {
+                    return show.favourite;
+                });
+            }
         }
-        if(settings.showOnlyFavorites){
-            data = data.filter((show) => {
-                return show.favourite;
-            });
-        }
+
 
         let sortDirection = settings.sortDirection === 'asc' ? 1 : -1;
 
