@@ -2,16 +2,22 @@
 
 namespace App\Utils;
 
+use App\Models\Settings;
 use Http;
 
 class TvDBUtils {
 
-    static string $API_PIN = 'KAPPRQZR'; //IPQZOCMN
-    static string $API_KEY = '580c9239-d2f8-4460-a22e-6831900a97a3';
+    static string $API_PIN = '';
+    static string $API_KEY = '';
     static string $HOST = 'https://api4.thetvdb.com/v4';
     static string $token = '';
 
     static function checkToken(): void {
+
+        $settings = Settings::getSettings();
+
+        self::$API_KEY = $settings->tvdb_api_key;
+        self::$API_PIN = $settings->tvdb_api_pin;
 
         if(self::$token <> '')
             return;

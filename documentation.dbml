@@ -1,0 +1,8 @@
+Project "Bill Tracker" {
+  database_type: 'Mysql'
+  Host: 'bill-tracker.online'
+  Note: '''
+       ### Editor: [https://github.dev/aquzif/bill-tracker](https://github.dev/aquzif/bill-tracker)
+  '''
+}
+

@@ -1,45 +1,60 @@
 <?php
 
-use App\Http\Controllers\SeriesController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\FallbackController;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\IsAdminMiddleware;
+use App\Http\Middleware\LedgerSelectMiddleware;
+use App\Http\Middleware\SetupMiddleware;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Volt\Volt;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+//--------------------------------------------------
+//     AUTH
+//--------------------------------------------------
 
-Route::get('/xt7', function (Request $request){
-   $fields = $request->validate([
-       'url' => 'required'
-   ]);
+Volt::route('/login', 'views.login')
+    ->name('login');
+Volt::route('/register', 'views.register')
+    ->name('register');
+Route::get('/',[FallbackController::class,'index'])->name('home');
+Route::get('/language/{locale}', function ($locale) {
+    setcookie('locale', $locale, time() + (86400 * 30), "/");
+    App::setLocale($locale);
+    return back();
+})->name('language');
 
-   return view('xt7',[
-       'url' => $fields['url']
-   ]);
+Route::middleware(['auth', 'verified' ])->group(fn() => [
+    //Volt::route('/setup','views.ledgers.create')->name('setup'),
 
-});
+    // without ledger
+//    Route::middleware(SetupMiddleware::class)->group(fn() => [
+//
+        Volt::route('/','views.dashboard')
+            ->name('dashboard'),
+        Volt::route('/profile','views.profile')
+            ->name('profile'),
+        Volt::route('/admin','views.admin')
+            ->name('settings.admin'),
+        Route::middleware(IsAdminMiddleware::class)->group(fn() => [
+           Volt::route('/settings','views.site-settings')
+               ->name('settings')
+        ]),
+//    ]),
 
-Route::get('/images/{image}', function ($image) {
-    $path = storage_path('app/images/'.$image);
-    if(!File::exists($path)) abort(404);
-    $file = File::get($path);
-    $type = File::mimeType($path);
-    $response = Response::make($file,200);
-    $response->header("Content-Type",$type);
+    //get avatar
+    Route::get('/avatar', [UserController::class,'avatar'])->name('avatar'),
+    //logout
+    Route::get('/logout',[UserController::class,'logout'])->name('logout'),
 
-    //make image cacheable for 30 days
-    $response->header("Cache-Control","max-age=2592000, public");
+]);
 
-    return $response;
-});
 
-Route::fallback(function () {
-    return view('react');
-});
+
+if(config('app.env') === 'local'){
+    Route::view('/sandbox','layouts.sandbox')->name('sandbox');
+}
+
+// When ledger is not selected, or other route is passed, select first ledger and redirect or redirect to setup page
+Route::fallback([FallbackController::class,'index']);
