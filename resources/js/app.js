@@ -6,6 +6,20 @@ import 'flatpickr/dist/flatpickr.css';
 import flatpickr from "flatpickr";
 //const Polish = require("flatpickr/dist/l10n/pl").default.pl;
 import Polish from "flatpickr/dist/l10n/pl";
+import 'jquery/dist/jquery.min.js';
+import 'tooltipster/dist/js/tooltipster.bundle.min.js';
+import 'tooltipster/dist/css/tooltipster.bundle.min.css';
+
+window.refreshTooltips= function () {
+    $('.tooltip').each(function () {
+        if(!$(this).hasClass('tooltipstered')) {
+            $(this).tooltipster({
+                delay: 0,
+                side: 'bottom'
+            });
+        }
+    });
+}
 
 window.flatpickr = flatpickr;
 window.Toaster = {

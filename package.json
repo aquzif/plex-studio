@@ -6,6 +6,7 @@
         "build": "vite build"
     },
     "devDependencies": {
+        "@rollup/plugin-inject": "^5.0.5",
         "@tailwindcss/forms": "^0.5.7",
         "autoprefixer": "^10.4.20",
         "axios": "^1.6.4",
@@ -16,6 +17,8 @@
         "vite-plugin-mkcert": "^1.17.5"
     },
     "dependencies": {
-        "flatpickr": "^4.6.13"
+        "flatpickr": "^4.6.13",
+        "jquery": "^3.7.1",
+        "tooltipster": "^4.2.8"
     }
 }

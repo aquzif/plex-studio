@@ -9,6 +9,12 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 
     use Toastable, Modalable;
 
+    public $series = [];
+
+
+    public function mount(){
+        $this->series = \App\Models\Show::all();
+    }
 
     public function openNewShowModal()
     {
@@ -20,7 +26,17 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 
 <div>
     <livewire:modals.new-show-modal/>
-    <p>test</p>
+
+    <div
+        class="container mx-auto flex flex-wrap flex-row"
+        style="max-width: 900px;"
+    >
+
+        @foreach($series as $show)
+            <x-show-tile :show="$show"/>
+        @endforeach
+    </div>
+
     <x-fab
         @click="window.Modals.show('new-show-modal')"
     />
