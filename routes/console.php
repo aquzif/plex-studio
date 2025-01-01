@@ -10,11 +10,17 @@ Artisan::command('inspire', function () {
 
 Artisan::command('upgrade', function () {
 
-    foreach (\App\Models\Show::where('id',10)->get() as $show) {
+    foreach (\App\Models\Show::all() as $show) {
 
         $show->audio_languages = fixJSONValue($show->audio_languages);
         $show->subtitle_languages = fixJSONValue($show->subtitle_languages);
         $show->save();
+    }
+
+    foreach (\App\Models\Url::all() as $url) {
+        if($url->quality === 'undefined')
+            $url->quality = 'unknown';
+        $url->save();
     }
 
 });
@@ -36,11 +42,9 @@ function fixJSONValue($val){
     }
 
     if(is_object($data[0]) && isset($data[0]->ord)){
-
         return json_encode(array_map(function($item){
             return $item->title;
         },$data));
-
     }
 
     return $val;

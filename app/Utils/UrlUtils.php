@@ -5,7 +5,7 @@ namespace App\Utils;
 class UrlUtils {
 
     static function getQualityFromUrl($url){
-        $quality = 'undefined';
+        $quality = 'unknown';
         if(str_contains($url, '480p')){
             $quality = '480p';
         }elseif(str_contains($url, '720p')){
