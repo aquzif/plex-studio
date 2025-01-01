@@ -20,6 +20,14 @@ class ModalComponent extends Component
         }
     }
 
+    public function updatedOpen(){
+        $this->resetComponent();
+    }
+
+    public function resetComponent() {
+
+    }
+
     public function render()
     {
         return <<<'blade'

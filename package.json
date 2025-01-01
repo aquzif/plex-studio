@@ -17,6 +17,7 @@
         "vite-plugin-mkcert": "^1.17.5"
     },
     "dependencies": {
+        "bootstrap": "^5.3.3",
         "flatpickr": "^4.6.13",
         "jquery": "^3.7.1",
         "tooltipster": "^4.2.8"

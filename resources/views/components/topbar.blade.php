@@ -5,7 +5,9 @@
 {{--        <div class="lg:hidden md:block" >--}}
 {{--            <x-heroicon-o-bars-3 class="w-8 h-8 mr-4" @click="navOpen = true" />--}}
 {{--        </div>--}}
-        <div class=" dark:text-neutral-300 flex flex-row">
+        <div class=" dark:text-neutral-300 flex flex-row cursor-pointer "
+            x-on:click="window.location.href = '/'"
+        >
             <img src="{{asset('/favicon.svg')}}" class="w-8 h-8" />
             <span class="dark:text-white text-gray-800 block ml-2"
                 style="
@@ -19,6 +21,14 @@
             >Plex Studio
             </span>
         </div>
+        <x-heroicon-o-arrow-up-circle
+            x-show="
+                window.location.pathname.includes('/series/')
+                || window.location.pathname.includes('/movie/')
+            "
+            class="ml-2 w-8 h-8 text-white cursor-pointer"
+            x-on:click="window.Navigator.redirectToUp()"
+        />
     </div>
 
     <div class="flex flex-row" >

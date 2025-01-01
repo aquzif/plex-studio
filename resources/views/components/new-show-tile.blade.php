@@ -13,8 +13,10 @@
         width: 156px;
         height: 220px;
     "
-    @click="Livewire.dispatch('newShowSelect',{showId: {{$show['tvdb_id']}}})"
+{{--    @click="$store.loader.show();$wire.dispatch('newShowSelect',{showId: {{$show['tvdb_id']}}})"--}}
+        @click="window.asyncEventWithLoader('newShowSelect', {showId: {{$show['tvdb_id']}}})"
 >
+
     <x-popover title="{{$title}}" >
         <img style="
                 height: 200px;

@@ -10,6 +10,21 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Volt\Volt;
 
+Route::get('/images/{image}', function ($image) {
+    $path = storage_path('app/images/'.$image);
+    if(!File::exists($path))
+        $path = storage_path('app/public/default_serie.jpg');
+    $file = File::get($path);
+    $type = File::mimeType($path);
+    $response = Response::make($file,200);
+    $response->header("Content-Type",$type);
+
+    //make image cacheable for 30 days
+    $response->header("Cache-Control","max-age=2592000, public");
+
+    return $response;
+});
+
 //--------------------------------------------------
 //     AUTH
 //--------------------------------------------------
@@ -33,6 +48,12 @@ Route::middleware(['auth', 'verified' ])->group(fn() => [
 //
         Volt::route('/','views.dashboard')
             ->name('dashboard'),
+        Volt::route('/movie/{movieId}','views.movie')
+            ->name('movie'),
+        Volt::route('/series/{seriesId}','views.series')
+            ->name('series'),
+        Volt::route('/series/{seriesId}/episodes/{seasonId}','views.episodes')
+            ->name('episodes'),
         Volt::route('/profile','views.profile')
             ->name('profile'),
         Volt::route('/admin','views.admin')

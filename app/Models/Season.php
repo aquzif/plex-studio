@@ -25,7 +25,14 @@ class Season extends Model
 
     public function episodes(){
         return $this->hasMany(Episode::class)->orderBy('episode_order_number');
+    }
 
+    public function howManyEpisodes() {
+        return $this->episodes()->count();
+    }
+
+    public function howManyDownloadedEpisodes() {
+        return $this->episodes()->where('downloaded', true)->count();
     }
 
     //delete all episodes when season is deleted, and unlink all files

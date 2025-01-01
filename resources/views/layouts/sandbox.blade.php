@@ -29,5 +29,8 @@
     >
         toast
     </button>
+    <x-icon-button >
+        <x-heroicon-m-plus />
+    </x-icon-button>
 
 @endsection

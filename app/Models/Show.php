@@ -36,6 +36,15 @@ class Show extends Model
         return $this->hasMany(Season::class)->orderBy('season_order_number');
     }
 
+    public function howManyEpisodes() {
+        return Episode::where('show_id',$this->id)->count();
+    }
+
+    public function howManyDownloadedEpisodes() {
+        return Episode::where('show_id',$this->id)->where('downloaded',true)->count();
+
+    }
+
     public function urls(){
         return $this->hasMany(Url::class,'movie_id','id');
     }
@@ -85,13 +94,12 @@ class Show extends Model
                 if($season['type']['type'] !== $fields['seasons_type'])
                     continue;
 
-
                 $seasons[] = [
                     'show_id' => $show['id'],
                     'tvdb_id' => $season['id'],
                     'name' => $season['number'] > 0 ? 'Sezon '.$season['number'] : 'Specials',
                     'season_order_number' => $season['number'],
-                    'thumb_path' => isset($season['image']) ? ImageUtils::downloadImage($season['image']) : null,
+                    'thumb_path' => isset($season['image']) ? ImageUtils::downloadImage($season['image']) : 'default',
                     'episodes' => []
                 ];
             }
@@ -125,6 +133,49 @@ class Show extends Model
             }
 
         }
+    }
+
+    public static function getSeasons($id) {
+
+        $toReturn = [];
+        $seasons = TvDBUtils::getSeriesByID($id)['seasons'];
+
+        foreach ($seasons as $seasonType) {
+            $exists = false;
+            foreach ($toReturn as $item) {
+                if($item['type'] == $seasonType['type']['type']){
+                    $exists = true;
+                }
+            }
+
+            if(!$exists)
+                $toReturn[] = [
+                    'name' => $seasonType['type']['name'],
+                    'type' => $seasonType['type']['type'],
+                    'seasons' => []
+                ];
+        }
+
+        foreach ($toReturn as &$item) {
+
+            $episodes = TvDBUtils::getSeasonTypeEpisodes($id, $item['type']);
+
+            foreach ($seasons as $season) {
+                if($item['type'] == $season['type']['type'])
+                    $item['seasons'][$season['number']] = 0;
+            }
+
+            //sort keys
+
+
+            foreach ($episodes as $episode) {
+                $item['seasons'][$episode['seasonNumber']] = $item['seasons'][$episode['seasonNumber']]+1;
+            }
+            ksort($item['seasons']);
+        }
+
+        return $toReturn;
+
     }
 
 }
