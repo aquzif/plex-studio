@@ -41,6 +41,6 @@ jobs:
       - name: Deploy to server
         run: rsync -e 'ssh -p 22' -avz  . ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }}:${{ secrets.SSH_DEPLOY_PATH }}
       - name: chmod files
-        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && chmod -R 755 ."
+        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && chmod -R 755 . && (sail down || true) && (sail up -d || true)"
       #- name: Migrate database
       #  run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && php82 artisan migrate --force"
