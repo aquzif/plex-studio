@@ -22,7 +22,7 @@ jobs:
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
       - name: Setup NodeJS
         uses: actions/setup-node@v3
         with:
@@ -46,4 +46,4 @@ jobs:
       - name: chmod files
         run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && chmod -R 755 ."
       - name: Migrate database
-        run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && php81 artisan migrate --force"
+        run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && php82 artisan migrate --force"
