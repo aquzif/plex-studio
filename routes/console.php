@@ -26,6 +26,13 @@ Artisan::command('upgrade', function () {
         $show->audio_languages = fixJSONValue($show->audio_languages);
         $show->subtitle_languages = fixJSONValue($show->subtitle_languages);
         $show->save();
+
+        foreach ($show->seasons()->get() as $season) {
+            $season->audio_languages = fixJSONValue($season->audio_languages);
+            $season->subtitle_languages = fixJSONValue($season->subtitle_languages);
+            $season->save();
+        }
+
     }
 
     foreach (\App\Models\Url::all() as $url) {
