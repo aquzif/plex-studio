@@ -13,7 +13,7 @@ use Livewire\Volt\Volt;
 Route::get('/images/{image}', function ($image) {
     $path = storage_path('app/images/'.$image);
     if(!File::exists($path))
-        $path = storage_path('app/public/default_serie.jpg');
+        $path = storage_path('default_serie.jpg');
     $file = File::get($path);
     $type = File::mimeType($path);
     $response = Response::make($file,200);
