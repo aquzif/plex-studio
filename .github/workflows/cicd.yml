@@ -1,65 +1,16 @@
-#name: CI
-#on:
-#  pull_request:
-#    branches:
-#      - main
-#  push:
-#    branches:
-#      - main
-#
-#jobs:
-#  build:
-#    runs-on: self-hosted
-#    steps:
-#      - name: Install SSH Key
-#        uses: shimataro/ssh-key-action@v2
-#        with:
-#          key: ${{ secrets.SSH_KEY }}
-#          known_hosts: 'placeholder'
-#          if_key_exists: 'replace'
-#      - run: echo $(ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} )
-#      - name: Adding Known Hosts
-#        run: ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-##      - name: "Setup PHP"
-##        uses: shivammathur/setup-php@v2
-##        with:
-##          php-version: '8.2'
-#      - name: Setup NodeJS
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: '18'
-#      - uses: actions/checkout@v3
-#      - name: Update composer dependencies
-#        run: composer update --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-##      - name: Install composer Dependencies
-##        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-#      - name: Install node dependencies
-#        run: npm install --force
-#      - name: Build assets
-#        run: npm run build
-#      - name: Remove unnesesary files
-#        run: |
-#          rm -rf node_modules
-#      - name: Deploy to server
-#        run: ssh administrator@192.168.0.220 "cd /services/plex-studio && git pull && composer install && ./vendor/bin/sail up -d"
-##      - name: Remove unnesesary files on server side
-##        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && rm -r ./public/build/*  || true" #exit with 0
-##      - name: Deploy to server
-##        run: rsync -e 'ssh -p 22' -avz  . ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }}:${{ secrets.SSH_DEPLOY_PATH }}
-##      - name: chmod files
-##        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && chmod -R 755 ."
-#      #- name: Migrate database
-#      #  run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && php82 artisan migrate --force"
-name: "CI/CD"
+name: CI
 on:
+  pull_request:
+    branches:
+      - main
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+
 jobs:
-  deploy:
+  build:
     runs-on: self-hosted
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -69,5 +20,33 @@ jobs:
       - run: echo $(ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} )
       - name: Adding Known Hosts
         run: ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-      - name: Migrate database
-        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DIR }} && ./vendor/bin/sail down && git pull && composer install && ./vendor/bin/sail up -d"
+#      - name: "Setup PHP"
+#        uses: shivammathur/setup-php@v2
+#        with:
+#          php-version: '8.2'
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - uses: actions/checkout@v3
+      - name: Update composer dependencies
+        run: composer update --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+#      - name: Install composer Dependencies
+#        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: Install node dependencies
+        run: npm install --force
+      - name: Build assets
+        run: npm run build
+      - name: Remove unnesesary files
+        run: |
+          rm -rf node_modules
+      - name: Deploy to server
+        run: ssh -p 22 administrator@192.168.0.220 "cd /services/plex-studio && git pull && composer install && ./vendor/bin/sail up -d"
+#      - name: Remove unnesesary files on server side
+#        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && rm -r ./public/build/*  || true" #exit with 0
+#      - name: Deploy to server
+#        run: rsync -e 'ssh -p 22' -avz  . ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }}:${{ secrets.SSH_DEPLOY_PATH }}
+#      - name: chmod files
+#        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && chmod -R 755 ."
+      #- name: Migrate database
+      #  run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && php82 artisan migrate --force"
