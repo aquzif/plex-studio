@@ -18,4 +18,18 @@ class UrlUtils {
         return $quality;
     }
 
+    static function getSeasonAndEpisodeFromUrl($url){
+        $season = null;
+        $episode = null;
+        $matches = [];
+        if(preg_match('/s(\d{1,2})e(\d{1,2})/i', $url, $matches)){
+            $season = $matches[1];
+            $episode = $matches[2];
+        }elseif(preg_match('/(\d{1,2})x(\d{1,2})/i', $url, $matches)) {
+            $season = $matches[1];
+            $episode = $matches[2];
+        }
+        return ['season' => (int)$season, 'episode' => (int)$episode];
+    }
+
 }

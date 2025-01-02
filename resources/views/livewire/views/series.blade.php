@@ -51,7 +51,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                 <div
                     wire:click="redirectToSerie({{ $season->id }})"
                 >
-                    <x-show-tile :season="$season"  />
+                    <livewire:show-tile :season="$season"  />
                 </div>
 
             @endforeach

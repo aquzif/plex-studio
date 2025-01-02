@@ -2,7 +2,7 @@
 @extends('layouts.main')
 
 @section('body')
-    <div x-data="{ navOpen: false }" >
+    <div x-data="{ navOpen: false, searchValue: '' }" >
 
 {{--        <livewire:components.navigation />--}}
         <div

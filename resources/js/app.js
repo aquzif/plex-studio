@@ -70,7 +70,10 @@ window.Navigator = {
             && (urlParts[0] === 'series' || urlParts[0] === 'movie')
             && !isNaN(urlParts[1])
         ){
-            window.location.href = '/';
+            if(urlParts[0] === 'series')
+                window.location.href = '/series';
+            else
+                window.location.href = '/movie';
         }
 
         if(urlParts.length === 4

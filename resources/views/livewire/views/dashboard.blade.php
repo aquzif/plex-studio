@@ -15,20 +15,47 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
     public $order = 'asc';
 
 
-    public function mount()
+    public function mount($page = 'default')
     {
+
+        if(($page !== 'series' && $page !== 'movie')){
+            $this->redirect('/series');
+            return;
+        }
+
+        $this->page = $page;
+
         $this->refreshShows();
     }
 
     #[On('refreshShows')]
     public function refreshShows()
     {
+        $config = \App\Utils\ConfigUtils::getConfig();
+
+        $conditions = [
+            [
+                'type', match ($this->page){
+                    'series' => 'series',
+                    'movie' => 'movie',
+                }
+                ],
+        ];
+
+
+        if($config['showOnlyIncomplete']){
+            $conditions[] = ['downloaded', false];
+        }
+
+        if($config['showOnlyFavourites']){
+            $conditions[] = ['favourite', true];
+        }
+
         $this->series = \App\Models\Show::
-        where('type', match ($this->page){
-            'series' => 'series',
-            'movie' => 'movie',
-        })->orderBy('name', $this->order)
-            ->get();
+        where($conditions)->orderBy(
+            $config['sortBy'],
+            $config['sortType'],
+        )->get();
     }
 
     public function openNewShowModal()
@@ -37,8 +64,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
     }
 
     public function changePage($page) {
-        $this->page = $page;
-        $this->refreshShows();
+        $this->redirect('/'.$page);
     }
 
     public function reorder() {
@@ -60,7 +86,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 
 }; ?>
 
-<div >
+<div>
     <livewire:modals.new-show-modal/>
 
     <div class="flex justify-center items-center">
@@ -85,11 +111,13 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
     >
 
         @foreach($series as $show)
-            <div wire:click="redirectToShow({{$show['id']}})"
+            <div
+                 @click="$wire.redirectToShow({{$show['id']}})"
                  wire:key="{{$show->id}}"
+                 x-show="searchValue === '' || '{{$show->name}}'.toLowerCase().includes(searchValue.toLowerCase())"
             >
-                <x-show-tile :show="$show" wire:key="{{$show->id}}" />
-{{--                <livewire:show-tile :show="$show" />--}}
+{{--                <x-show-tile :show="$show" wire:key="{{$show->id}}" />--}}
+                <livewire:show-tile :show="$show" :key="$show->id" />
             </div>
         @endforeach
     </div>

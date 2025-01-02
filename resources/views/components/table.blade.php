@@ -1,5 +1,5 @@
 <?php
-$dense = $dense ?? false;
+$dense = $dense ?? 'false';
 ?>
 <table
     class=" max-w-full  divide-y divide-gray-200 dark:divide-gray-700 border border-gray-300 dark:border-gray-700"

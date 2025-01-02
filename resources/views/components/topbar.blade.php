@@ -1,7 +1,8 @@
 <div class="h-16 w-full border-b-2 border-b-gray-200 flex flex-row justify-between bg-white
     dark:bg-neutral-800 dark:border-b-neutral-700
 ">
-    <div class="p-4 text-xl pl-6 flex flex-row"  >
+    <livewire:modals.user-config-modal />
+    <div class="m-4 text-xl ml-6 flex flex-row"  >
 {{--        <div class="lg:hidden md:block" >--}}
 {{--            <x-heroicon-o-bars-3 class="w-8 h-8 mr-4" @click="navOpen = true" />--}}
 {{--        </div>--}}
@@ -9,7 +10,7 @@
             x-on:click="window.location.href = '/'"
         >
             <img src="{{asset('/favicon.svg')}}" class="w-8 h-8" />
-            <span class="dark:text-white text-gray-800 block ml-2"
+            <span class="dark:text-white text-gray-800 block ml-2 mr-6"
                 style="
                         font-size: 1.25rem;
                         line-height: 1.6;
@@ -30,9 +31,21 @@
             x-on:click="window.Navigator.redirectToUp()"
         />
     </div>
-
-    <div class="flex flex-row" >
+    <div class="p-2 container max-w-lg" >
+        <x-input
+            name="searchValue"
+            placeholder="Search"
+            class="w-full"
+            x-model.debounce="searchValue"
+        />
+    </div>
+    <div class="flex flex-row items-center content-center" >
         <x-theme-switcher />
+        <x-icon-button class="mr-2"
+            x-on:click="Livewire.dispatch('openModal',{name: 'user-config-modal'})"
+        >
+            <x-heroicon-s-cog-6-tooth />
+        </x-icon-button>
         <div class="flex flex-row " >
             <x-dropdown>
                 <x-slot:ignite>

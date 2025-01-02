@@ -37,11 +37,17 @@ class Show extends Model
     }
 
     public function howManyEpisodes() {
-        return Episode::where('show_id',$this->id)->count();
+        $seasons = $this->seasons()->where('season_order_number','>',0)->get();
+        return $seasons->map(function($season){
+            return $season->episodes()->count();
+        })->sum();
     }
 
     public function howManyDownloadedEpisodes() {
-        return Episode::where('show_id',$this->id)->where('downloaded',true)->count();
+        $seasons = $this->seasons()->where('season_order_number','>',0)->get();
+        return $seasons->map(function($season){
+            return $season->episodes()->where('downloaded',true)->count();
+        })->sum();
 
     }
 

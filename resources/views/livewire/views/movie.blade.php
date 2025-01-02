@@ -28,9 +28,20 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
     {
         $this->movieId = $movieId;
         $this->movie = \App\Models\Show::find($movieId);
-        $this->getQualities();
-        $this->getAudioLanguages();
-        $this->getSubtitleLanguages();
+
+        if ($this->movie === null){
+            $this->redirect(route('dashboard'));
+            return;
+        }
+
+        if($this->movie->type === 'series'){
+            $this->redirect(route('series', ['serieId' => $this->movie->id]));
+        }
+
+        $this->qualities = \App\Utils\Utils::getQualities();
+        $this->audioLanguages = \App\Utils\Utils::getAudioLanguages();
+        $this->subtitleLanguages = \App\Utils\Utils::getSubtitleLanguages();
+
 
 
 
@@ -57,75 +68,11 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 //            ,$this->movie->toJson()
 //        );
 
-        if ($this->movie === null){
-            $this->redirect(route('dashboard'));
-            return;
-        }
-
-        $this->quantityInput = $this->movie->quality;
-
-        if($this->movie->type === 'series'){
-            $this->redirect(route('series', ['serieId' => $this->movie->id]));
-        }
+        $this->qualityInput = $this->movie->quality;
 
     }
 
-    private function getQualities() {
-        $this->qualities = [
-            [
-                'value' => 'undef',
-                'label' => '<p style="color: '.config('plex.qualityColors.unknown').'" >Undef</p>',
-            ],
-            [
-                'value' => '480p',
-                'label' => '<p style="color: '.config('plex.qualityColors.bad').'" >480p</p>',
-            ],
-            [
-                'value' => '720p',
-                'label' => '<p style="color: '.config('plex.qualityColors.medium').'" >720p</p>',
-            ],
-            [
-                'value' => '1080p',
-                'label' => '<p style="color: '.config('plex.qualityColors.good').'" >1080p</p>',
-            ],
-            [
-                'value' => '2160p',
-                'label' => '<p style="color: '.config('plex.qualityColors.best').'" >2160p</p>',
-            ]
-        ];
-    }
 
-    private function getAudioLanguages() {
-        $this->audioLanguages = [
-            [
-                'value' => 'Dubbing',
-                'label' => '<p style="color: '.config('plex.qualityColors.best').'" >Dubbing</p>',
-            ],
-            [
-                'value' => 'Lektor',
-                'label' => '<p style="color: '.config('plex.qualityColors.best').'" >Lektor</p>',
-            ],
-            [
-                'value' => 'Angielski',
-                'label' => '<p style="color: '.config('plex.qualityColors.good').'" >Angielski</p>',
-            ],
-
-        ];
-    }
-
-    private function getSubtitleLanguages() {
-        $this->subtitleLanguages = [
-            [
-                'value' => 'Polski',
-                'label' => '<p style="color: '.config('plex.qualityColors.best').'" >Polski</p>',
-            ],
-            [
-                'value' => 'Angielski',
-                'label' => '<p style="color: '.config('plex.qualityColors.good').'" >Angielski</p>',
-            ],
-
-        ];
-    }
 
     //on quality change
     public function updatedQualityInput()
@@ -172,7 +119,16 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
     public function toggleUrlDownloaded($urlId) {
         $url = \App\Models\Url::find($urlId);
         $url->update(['downloaded' => !$url->downloaded]);
+    }
 
+    public function toggleUrlInvalid($urlId){
+        $url = \App\Models\Url::find($urlId);
+        $url->update(['invalid' => !$url->invalid]);
+    }
+
+    public function deleteUrl($urlId) {
+        $url = \App\Models\Url::find($urlId);
+        $url->delete();
     }
 
 
@@ -267,7 +223,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
         >Links</h2>
         <x-table dense="true" >
             <x-slot:columns>
-                <x-table-column></x-table-column>
+                <x-table-column class="px-0 w-0" ></x-table-column>
                 <x-table-column>Link</x-table-column>
                 <x-table-column>Quality</x-table-column>
                 <x-table-column>Tools</x-table-column>
@@ -275,17 +231,29 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
             <x-slot:rows>
                 @foreach($movie->urls()->get() as $url)
                     <x-table-row>
-                        <x-table-cell>
+                        <x-table-cell  >
                             @if($url->auto_valid)
-                                <x-heroicon-o-check-circle class="text-green-500 w-8 h-8"  />
+                                <div
+
+                                >
+                                    <x-heroicon-o-check-circle class="text-green-500 w-8 h-8 mx-auto"  />
+                                </div>
                             @else
-                                <x-heroicon-o-x-circle class="text-red-500 w-8 h-8"  />
+                                <div
+                                    {{ Popper::interactive()->arrow('round')->placement('bottom')
+                                        ->pop('Sprawdzono: <br/>'.
+                                            Carbon\Carbon::parse($url->last_validated_date)->format('Y-m-d H:i')
+                                        ) }}
+                                >
+                                    <x-heroicon-o-x-circle class="text-red-500 w-8 h-8 mx-auto"  />
+                                </div>
+
                             @endif
                         </x-table-cell>
                         <x-table-cell>
                             <a href="{{$url->url}}"
-                               class="text-white-500 underline text-wrap break-all
-                                {{$url->downloaded ? 'line-through' : ''}}
+                               class="underline text-wrap break-all
+                                {{$url->downloaded ? 'text-green-500' : ($url->invalid? 'text-red-500':'text-white-500')}}
                                " target="_blank"
                             >{{$url->url}}</a>
                         </x-table-cell>
@@ -294,9 +262,19 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                         </x-table-cell>
                         <x-table-cell class="flex flex-row" >
                             <x-icon-button
+                                wire:click="toggleUrlInvalid({{$url->id}})"
+                            >
+                                <x-heroicon-o-exclamation-circle class="w-6 h-6 text-yellow-400 " />
+                            </x-icon-button>
+                            <x-icon-button
                                 wire:click="toggleUrlDownloaded({{$url->id}})"
                             >
-                                <x-heroicon-c-arrow-down-tray class="text-green-500 w-6 h-6" />
+                                <x-heroicon-c-arrow-down-tray :class="'w-6 h-6 '.($url->downloaded ? 'text-red-500':'text-green-500')" />
+                            </x-icon-button>
+                            <x-icon-button
+                                wire:click="deleteUrl({{$url->id}})"
+                            >
+                                <x-heroicon-c-trash class="w-6 h-6 text-red-500" />
                             </x-icon-button>
                         </x-table-cell>
                     </x-table-row>

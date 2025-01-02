@@ -62,6 +62,8 @@ Route::middleware(['auth', 'verified' ])->group(fn() => [
            Volt::route('/settings','views.site-settings')
                ->name('settings')
         ]),
+    Volt::route('/{page}','views.dashboard')
+        ->name('dashboardMovies'),
 //    ]),
 
     //get avatar
