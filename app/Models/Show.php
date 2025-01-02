@@ -141,6 +141,68 @@ class Show extends Model
         }
     }
 
+    public function getStatus()
+    {
+
+        $red = 'red-600';
+        $green = 'green-600';
+        $yellow = 'yellow-500';
+
+        if($this->type === 'movie') {
+            $urlsCount = $this->urls->count();
+            $downloadedUrlsCount = $this->urls->where('downloaded', true)->count();
+            if ($this->downloaded ||
+                ($urlsCount === $downloadedUrlsCount && $urlsCount > 0)
+            ) {
+                return [
+                    'color' => $green,
+                    'value' => '100%',
+                    'fullyDownloaded' => true
+                ];
+            } else {
+
+
+                if($urlsCount === 0 || $downloadedUrlsCount === 0) {
+                    return [
+                        'color' => $red,
+                        'value' => '0%',
+                        'fullyDownloaded' => false
+                    ];
+                }else{
+                    return [
+                        'color' => $yellow,
+                        'value' => round(($downloadedUrlsCount / $urlsCount) * 100) . '%',
+                        'fullyDownloaded' => false
+                    ];
+                }
+            }
+        }else{
+            $episodes = $this->howManyEpisodes();
+            $downloaded = $this->howManyDownloadedEpisodes();
+
+            if($episodes === 0 || $downloaded === 0) {
+                return [
+                    'color' => $red,
+                    'value' => '0%',
+                    'fullyDownloaded' => false
+                ];
+            }else if ($episodes === $downloaded){
+                return [
+                    'color' => $green,
+                    'value' => '100%',
+                    'fullyDownloaded' => true
+                ];
+            }else{
+                return [
+                    'color' => $yellow,
+                    'value' => round(($downloaded / $episodes) * 100) . '%',
+                    'fullyDownloaded' => false
+                ];
+            }
+
+        }
+    }
+
     public static function getSeasons($id) {
 
         $toReturn = [];

@@ -51,12 +51,24 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
             $conditions[] = ['favourite', true];
         }
 
-        $this->series = \App\Models\Show::
+        $series = \App\Models\Show::
         where($conditions)->orderBy(
             $config['sortBy'],
             $config['sortType'],
         )->get();
-        
+
+        $seriesNew = [];
+
+        foreach ($series as $serie) {
+            $status = $serie->getStatus();
+            if($config['hideDownloadedEpisodes'] && $status['fullyDownloaded']){
+                continue;
+            }
+            $seriesNew[] = $serie;
+        }
+
+        $this->series = $seriesNew;
+
     }
 
     public function openNewShowModal()

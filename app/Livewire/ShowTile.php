@@ -35,43 +35,9 @@ class ShowTile extends Component
             $this->downloaded = $show['downloaded'] ?? false;
             $this->favorite = $show['favorite'] ?? false;
 
-            if($this->type === 'movie') {
-                $urlsCount = $show->urls->count();
-                $downloadedUrlsCount = $show->urls->where('downloaded', true)->count();
-                if ($this->downloaded ||
-                    ($urlsCount === $downloadedUrlsCount && $urlsCount > 0)
-                ) {
-                    $this->color = $green;
-                    $this->subValue = '100%';
-                } else {
-
-
-                    if($urlsCount === 0 || $downloadedUrlsCount === 0) {
-                        $this->color = $red;
-                        $this->subValue = '0%';
-                    }else{
-                        $this->color = $yellow;
-                        $this->subValue = round(($downloadedUrlsCount / $urlsCount) * 100) . '%';
-                    }
-                }
-            }else{
-                $episodes = $show->howManyEpisodes();
-                $downloaded = $show->howManyDownloadedEpisodes();
-
-
-
-                if($episodes === 0 || $downloaded === 0) {
-                    $this->color = $red;
-                    $this->subValue = '0%';
-                }else if ($episodes === $downloaded){
-                    $this->color = $green;
-                    $this->subValue = '100%';
-                }else{
-                    $this->color = $yellow;
-                    $this->subValue = round(($downloaded / $episodes) * 100) . '%';
-                }
-
-            }
+            $status = $show->getStatus();
+            $this->color = $status['color'];
+            $this->subValue = $status['value'];
         }else{
             $this->src = $season['thumb_path'] ?? 'default';
             $this->title = $season['name'];
