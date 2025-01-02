@@ -61,7 +61,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 
         foreach ($series as $serie) {
             $status = $serie->getStatus();
-            if($config['hideDownloadedEpisodes'] && $status['fullyDownloaded']){
+            if($config['showOnlyIncomplete'] && $status['fullyDownloaded']){
                 continue;
             }
             $seriesNew[] = $serie;
