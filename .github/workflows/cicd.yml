@@ -17,9 +17,9 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           known_hosts: 'placeholder'
           if_key_exists: 'replace'
-      - run: echo $(ssh-keyscan -p 222 ${{ secrets.SERVER_HOST }} )
+      - run: echo $(ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} )
       - name: Adding Known Hosts
-        run: ssh-keyscan -p 222 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+        run: ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
@@ -41,10 +41,10 @@ jobs:
         run: |
           rm -rf node_modules
       - name: Remove unnesesary files on server side
-        run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && rm -r ./public/build/*  || true" #exit with 0
+        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && rm -r ./public/build/*  || true" #exit with 0
       - name: Deploy to server
-        run: rsync -e 'ssh -p 222' -avz  . ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }}:${{ secrets.SSH_DEPLOY_PATH }}
+        run: rsync -e 'ssh -p 22' -avz  . ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }}:${{ secrets.SSH_DEPLOY_PATH }}
       - name: chmod files
-        run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && chmod -R 755 ."
+        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && chmod -R 755 ."
       #- name: Migrate database
       #  run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && php82 artisan migrate --force"
