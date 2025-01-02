@@ -20,19 +20,19 @@ jobs:
       - run: echo $(ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} )
       - name: Adding Known Hosts
         run: ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-      - name: "Setup PHP"
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
+#      - name: "Setup PHP"
+#        uses: shivammathur/setup-php@v2
+#        with:
+#          php-version: '8.2'
       - name: Setup NodeJS
         uses: actions/setup-node@v3
         with:
           node-version: '18'
       - uses: actions/checkout@v3
-      - name: Update composer dependencies
-        run: composer update --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-      - name: Install composer Dependencies
-        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+#      - name: Update composer dependencies
+#        run: composer update --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+#      - name: Install composer Dependencies
+#        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Install node dependencies
         run: npm install --force
       - name: Build assets
