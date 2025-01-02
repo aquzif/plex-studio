@@ -56,6 +56,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
             $config['sortBy'],
             $config['sortType'],
         )->get();
+        dd($this->series);
     }
 
     public function openNewShowModal()
