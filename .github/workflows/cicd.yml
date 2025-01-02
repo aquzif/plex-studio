@@ -40,11 +40,13 @@ jobs:
       - name: Remove unnesesary files
         run: |
           rm -rf node_modules
-      - name: Remove unnesesary files on server side
-        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && rm -r ./public/build/*  || true" #exit with 0
       - name: Deploy to server
-        run: rsync -e 'ssh -p 22' -avz  . ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }}:${{ secrets.SSH_DEPLOY_PATH }}
-      - name: chmod files
-        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && chmod -R 755 ."
+        run: ssh administrator@192.168.0.220 "cd /services/plex-studio && git pull && composer install && ./vendor/bin/sail up -d"
+#      - name: Remove unnesesary files on server side
+#        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && rm -r ./public/build/*  || true" #exit with 0
+#      - name: Deploy to server
+#        run: rsync -e 'ssh -p 22' -avz  . ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }}:${{ secrets.SSH_DEPLOY_PATH }}
+#      - name: chmod files
+#        run: ssh -p 22 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && chmod -R 755 ."
       #- name: Migrate database
       #  run: ssh -p 222 ${{secrets.SSH_USERNAME}}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SSH_DEPLOY_PATH }} && php82 artisan migrate --force"
