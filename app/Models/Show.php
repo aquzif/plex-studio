@@ -10,7 +10,7 @@ use Storage;
 class Show extends Model
 {
     public $timestamps = false;
-    protected $with = ['seasons','urls'];
+//    protected $with = ['seasons','urls'];
 
     protected $fillable = [
         'name',

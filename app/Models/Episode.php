@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Episode extends Model
 {
     public $timestamps = false;
-    protected $with = ['urls'];
+//    protected $with = ['urls'];
     protected $fillable = [
         'name',
         'season_id',

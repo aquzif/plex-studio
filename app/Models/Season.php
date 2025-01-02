@@ -8,7 +8,7 @@ use Storage;
 class Season extends Model
 {
     public $timestamps = false;
-    protected $with = ['episodes'];
+//    protected $with = ['episodes'];
 
     protected $fillable = [
         'show_id',
