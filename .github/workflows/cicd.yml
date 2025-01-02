@@ -29,9 +29,9 @@ jobs:
           node-version: '18'
       - uses: actions/checkout@v3
       - name: Update composer dependencies
-        run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer update --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Install composer Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Install node dependencies
         run: npm install --force
       - name: Build assets
