@@ -44,8 +44,8 @@ class ShowTile extends Component
 
 
 
-            $episodes = $season->howManyEpisodes();
-            $downloaded = $season->howManyDownloadedEpisodes();
+            $episodes = $season->howManyReleasedEpisodes();
+            $downloaded = $season->howManyDownloadedReleasedEpisodes();
 
             if($episodes === 0 || $downloaded === 0) {
                 $this->color = $red;

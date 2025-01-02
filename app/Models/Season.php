@@ -31,8 +31,16 @@ class Season extends Model
         return $this->episodes()->count();
     }
 
+    public function howManyReleasedEpisodes() {
+        return $this->episodes()->where('release_date', '<=', now())->count();
+    }
+
     public function howManyDownloadedEpisodes() {
         return $this->episodes()->where('downloaded', true)->count();
+    }
+
+    public function howManyDownloadedReleasedEpisodes() {
+        return $this->episodes()->where('downloaded', true)->where('release_date', '<=', now())->count();
     }
 
     //delete all episodes when season is deleted, and unlink all files

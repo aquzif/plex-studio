@@ -14,4 +14,7 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    build: {
+        commonjsOptions: { transformMixedEsModules: true } // Change
+    }
 });

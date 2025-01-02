@@ -43,12 +43,25 @@ class Show extends Model
         })->sum();
     }
 
+    public function howManyReleasedEpisodes() {
+        $seasons = $this->seasons()->where('season_order_number','>',0)->get();
+        return $seasons->map(function($season){
+            return $season->episodes()->where('release_date', '<=', now())->count();
+        })->sum();
+    }
+
     public function howManyDownloadedEpisodes() {
         $seasons = $this->seasons()->where('season_order_number','>',0)->get();
         return $seasons->map(function($season){
             return $season->episodes()->where('downloaded',true)->count();
         })->sum();
+    }
 
+    public function howManyDownloadedReleasedEpisodes() {
+        $seasons = $this->seasons()->where('season_order_number','>',0)->get();
+        return $seasons->map(function($season){
+            return $season->episodes()->where('downloaded',true)->where('release_date', '<=', now())->count();
+        })->sum();
     }
 
     public function urls(){
@@ -177,8 +190,8 @@ class Show extends Model
                 }
             }
         }else{
-            $episodes = $this->howManyEpisodes();
-            $downloaded = $this->howManyDownloadedEpisodes();
+            $episodes = $this->howManyReleasedEpisodes();
+            $downloaded = $this->howManyDownloadedReleasedEpisodes();
 
             if($episodes === 0 || $downloaded === 0) {
                 return [
