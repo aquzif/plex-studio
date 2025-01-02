@@ -16,6 +16,7 @@ jobs:
         with:
           key: ${{ secrets.SSH_KEY }}
           known_hosts: 'placeholder'
+          if_key_exists: 'replace'
       - run: echo $(ssh-keyscan -p 222 ${{ secrets.SERVER_HOST }} )
       - name: Adding Known Hosts
         run: ssh-keyscan -p 222 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
