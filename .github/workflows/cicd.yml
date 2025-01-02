@@ -20,10 +20,12 @@ jobs:
       - run: echo $(ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} )
       - name: Adding Known Hosts
         run: ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-#      - name: "Setup PHP"
-#        uses: shivammathur/setup-php@v2
-#        with:
-#          php-version: '8.2'
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, zip, pcntl, pdo, pdo_mysql, bcmath, gd
+          coverage: none
       - name: Setup NodeJS
         uses: actions/setup-node@v3
         with:
