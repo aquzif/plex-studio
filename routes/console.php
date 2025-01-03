@@ -14,9 +14,11 @@ use App\Models\Url;
 
 Schedule::command('sync:tvdb')->dailyAt('12:00');
 
-Artisan::command('inspire', function () {
+Artisan::command('schedule:jdownloaderupdate', function () {
     $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
+})->everyMinute();
+
+
 
 
 Artisan::command('upgrade', function () {
