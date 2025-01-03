@@ -56,6 +56,21 @@ return [
             'throw' => false,
         ],
 
+
+
+        'plex' => [
+            'driver' => 'ftp',
+            'host' => env('PLEX_FILES_HOST'),
+            'port' => env('PLEX_FILES_PORT',21),
+            'username' => env('PLEX_FILES__USERNAME'),
+            'password' => env('PLEX_FILES__PASSWORD'),
+            'root' => env('PLEX_FILES__ROOT','/'),
+            'passive' => true,
+            'ssl' => false,
+            'timeout' => 30,
+            'throw' => false,
+        ],
+
     ],
 
     /*

@@ -24,6 +24,7 @@ class Show extends Model
         'needs_update',
         'audio_languages',
         'subtitle_languages',
+        'directory_name'
     ];
 
     protected $casts = [

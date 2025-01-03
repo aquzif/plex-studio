@@ -32,4 +32,11 @@ class UrlUtils {
         return ['season' => (int)$season, 'episode' => (int)$episode];
     }
 
+    static function joinPaths(...$paths) {
+        $paths = array_map(function($path) {
+            return trim($path, '/');
+        }, $paths);
+        return join('/', $paths);
+    }
+
 }

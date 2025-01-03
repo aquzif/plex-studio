@@ -56,6 +56,21 @@ class EpisodeCard extends Component
         $url->delete();
     }
 
+    public function startAutoDownload($urlId) {
+        $url = \App\Models\Url::find($urlId);
+
+        if(!$url->episode()->first()
+            ->show()->first()->directory_name){
+            $this->sendErrorToast('Show directory name is not set');
+            return;
+        }
+
+        $url->update([
+            'auto_download' => true,
+            'auto_download_status' => 'pending'
+        ]);
+    }
+
     public function render()
     {
         return view('livewire.episode-card');

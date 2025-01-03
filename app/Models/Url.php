@@ -19,13 +19,17 @@ class Url extends Model
         'last_validated_date',
         'auto_valid',
         'host',
-        'quality'
+        'quality',
+        'auto_download',
+        'package_name',
+        'auto_download_status',
     ];
 
     protected $casts = [
         'downloaded' => 'boolean',
         'invalid' => 'boolean',
         'auto_valid' => 'boolean',
+        'auto_download' => 'boolean',
 
     ];
 

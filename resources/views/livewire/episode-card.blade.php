@@ -31,6 +31,7 @@
             <x-table-column class="px-0 w-0" ></x-table-column>
             <x-table-column>Link</x-table-column>
             <x-table-column>Quality</x-table-column>
+            <x-table-column>Download status</x-table-column>
             <x-table-column>Tools</x-table-column>
         </x-slot:columns>
         <x-slot:rows>
@@ -39,7 +40,9 @@
                     <x-table-cell  >
                         @if($url->auto_valid)
                             <div
-
+                                {{ Popper::interactive()->arrow('round')->placement('bottom')
+                                   ->pop('Nie sprawdzono')
+                                }}
                             >
                                 <x-heroicon-o-check-circle class="text-green-500 w-8 h-8 mx-auto"  />
                             </div>
@@ -65,22 +68,54 @@
                     <x-table-cell class="text-center" >
                         <x-quality-badge :quality="$url->quality" />
                     </x-table-cell>
-                    <x-table-cell class="flex flex-row" >
-                        <x-icon-button
-                            wire:click="toggleUrlInvalid({{$url->id}})"
-                        >
-                            <x-heroicon-o-exclamation-circle class="w-6 h-6 text-yellow-400 " />
-                        </x-icon-button>
-                        <x-icon-button
-                            wire:click="toggleUrlDownloaded({{$url->id}})"
-                        >
-                            <x-heroicon-c-arrow-down-tray :class="'w-6 h-6 '.($url->downloaded ? 'text-red-500':'text-green-500')" />
-                        </x-icon-button>
-                        <x-icon-button
-                            wire:click="deleteUrl({{$url->id}})"
-                        >
-                            <x-heroicon-c-trash class="w-6 h-6 text-red-500" />
-                        </x-icon-button>
+                    <x-table-cell class="text-center" >
+                        @if($url->auto_download)
+                            {{$url->auto_download_status}}
+                        @else
+                            <x-button
+                                wire:click="startAutoDownload({{$url->id}})"
+                            >
+                                Start auto download
+                            </x-button>
+                        @endif
+                    </x-table-cell>
+                    <x-table-cell >
+                        <div class="flex flex-row" >
+                            <div
+                                {{Popper::interactive()->arrow('round')->placement('bottom')
+                                    ->pop('Oznacz jako nieprawidłowy')
+                                }}
+                            >
+                                <x-icon-button
+
+                                    wire:click="toggleUrlInvalid({{$url->id}})"
+                                >
+                                    <x-heroicon-o-exclamation-circle class="w-6 h-6 text-yellow-400 " />
+                                </x-icon-button>
+                            </div>
+                            <div
+                                {{Popper::interactive()->arrow('round')->placement('bottom')
+                                    ->pop('Oznacz jako pobrane')
+                                }}
+                            >
+                                <x-icon-button
+                                    wire:click="toggleUrlDownloaded({{$url->id}})"
+                                >
+                                    <x-heroicon-c-arrow-down-tray :class="'w-6 h-6 '.($url->downloaded ? 'text-red-500':'text-green-500')" />
+                                </x-icon-button>
+                            </div>
+                            <div
+                                {{Popper::interactive()->arrow('round')->placement('bottom')
+                                    ->pop('Usuń link')
+                                }}
+                            >
+                                <x-icon-button
+                                    wire:click="deleteUrl({{$url->id}})"
+                                >
+                                    <x-heroicon-c-trash class="w-6 h-6 text-red-500" />
+                                </x-icon-button>
+                            </div>
+                        </div>
                     </x-table-cell>
                 </x-table-row>
             @endforeach
