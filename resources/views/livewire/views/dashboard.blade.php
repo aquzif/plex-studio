@@ -42,12 +42,11 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                 ],
         ];
 
-
-        if($config['showOnlyIncomplete']){
+        if($config['show_only_incomplete']){
             $conditions[] = ['downloaded', false];
         }
 
-        if($config['showOnlyFavourites']){
+        if($config['show_only_favourites']){
             $conditions[] = ['favourite', true];
         }
 
@@ -61,7 +60,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 
         foreach ($series as $serie) {
             $status = $serie->getStatus();
-            if($config['showOnlyIncomplete'] && $status['fullyDownloaded']){
+            if($config['show_only_incomplete'] && $status['fullyDownloaded']){
                 continue;
             }
             $seriesNew[] = $serie;

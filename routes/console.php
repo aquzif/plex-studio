@@ -15,7 +15,7 @@ use App\Models\Url;
 Schedule::command('sync:tvdb')->dailyAt('12:00');
 
 Artisan::command('schedule:jdownloaderupdate', function () {
-    $this->comment(Inspiring::quote());
+    \App\Schedules\JDownloadUpdate::run();
 })->everyMinute();
 
 
