@@ -12,68 +12,9 @@ use Intervention\Image\Image;
 use App\Models\Url;
 
 
-Schedule::command('sync:tvdb')->dailyAt('12:00');
-
 Artisan::command('schedule:jdownloaderupdate', function () {
     \App\Schedules\JDownloadUpdate::run();
 })->everyMinute()->withoutOverlapping(10);
-
-
-
-
-
-
-
-Artisan::command('upgrade', function () {
-
-    foreach (\App\Models\Show::all() as $show) {
-
-        $show->audio_languages = fixJSONValue($show->audio_languages);
-        $show->subtitle_languages = fixJSONValue($show->subtitle_languages);
-        $show->save();
-
-        foreach ($show->seasons()->get() as $season) {
-            $season->audio_languages = fixJSONValue($season->audio_languages);
-            $season->subtitle_languages = fixJSONValue($season->subtitle_languages);
-            $season->save();
-        }
-
-    }
-
-    foreach (\App\Models\Url::all() as $url) {
-        if($url->quality === 'undefined')
-            $url->quality = 'unknown';
-        $url->save();
-    }
-
-});
-
-function fixJSONValue($val){
-
-    if(!json_decode($val)){
-        return '[]';
-    }
-
-    $data = json_decode($val);
-
-    if(!is_array($data)){
-        return '[]';
-    }
-
-    if(count($data) == 0){
-        return '[]';
-    }
-
-    if(is_object($data[0]) && isset($data[0]->ord)){
-        return json_encode(array_map(function($item){
-            return $item->title;
-        },$data));
-    }
-
-    return $val;
-
-}
-
 
 Artisan::command('sync:tvdb',function (){
 
@@ -221,9 +162,7 @@ Artisan::command('sync:tvdb',function (){
 
     Artisan::call('fix_thumbs');
 
-});
-
-
+})->dailyAt('12:00');
 Artisan::command('fix_thumbs',function (){
     $shows = \App\Models\Show::all();
     foreach ($shows as $show) {
@@ -263,3 +202,53 @@ Artisan::command('fix_thumbs',function (){
         }
     }
 });
+
+
+Artisan::command('upgrade', function () {
+
+    foreach (\App\Models\Show::all() as $show) {
+
+        $show->audio_languages = fixJSONValue($show->audio_languages);
+        $show->subtitle_languages = fixJSONValue($show->subtitle_languages);
+        $show->save();
+
+        foreach ($show->seasons()->get() as $season) {
+            $season->audio_languages = fixJSONValue($season->audio_languages);
+            $season->subtitle_languages = fixJSONValue($season->subtitle_languages);
+            $season->save();
+        }
+
+    }
+
+    foreach (\App\Models\Url::all() as $url) {
+        if($url->quality === 'undefined')
+            $url->quality = 'unknown';
+        $url->save();
+    }
+
+});
+function fixJSONValue($val){
+
+    if(!json_decode($val)){
+        return '[]';
+    }
+
+    $data = json_decode($val);
+
+    if(!is_array($data)){
+        return '[]';
+    }
+
+    if(count($data) == 0){
+        return '[]';
+    }
+
+    if(is_object($data[0]) && isset($data[0]->ord)){
+        return json_encode(array_map(function($item){
+            return $item->title;
+        },$data));
+    }
+
+    return $val;
+
+}
