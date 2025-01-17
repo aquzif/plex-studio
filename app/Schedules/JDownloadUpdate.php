@@ -288,6 +288,7 @@ class JDownloadUpdate {
     public static function addNewLinksTojDownloader() {
         $urls = Url::where('episode_id', '!=', '0')
             ->where('package_name',  null)
+            ->where('status', UrlStatus::CREATED)
             ->get();
 
         foreach ($urls as $url) {
