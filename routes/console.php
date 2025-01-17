@@ -203,7 +203,6 @@ Artisan::command('fix_thumbs',function (){
     }
 });
 
-
 Artisan::command('upgrade', function () {
 
     foreach (\App\Models\Show::all() as $show) {

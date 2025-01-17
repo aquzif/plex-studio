@@ -52,6 +52,10 @@ Route::middleware(['auth', 'verified' ])->group(fn() => [
             ->name('movie'),
         Volt::route('/series/{seriesId}','views.series')
             ->name('series'),
+        Volt::route('/accounts','views.jd-accounts')
+            ->name('accounts'),
+        Volt::route('/download-list','views.download-list')
+            ->name('download-list'),
         Volt::route('/series/{seriesId}/episodes/{seasonId}','views.episodes')
             ->name('episodes'),
         Volt::route('/profile','views.profile')

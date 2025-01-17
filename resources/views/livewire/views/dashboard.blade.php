@@ -108,7 +108,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 
     <div class="flex justify-center items-center">
         <div class="flex items-center">
-            @foreach(['series','movie'] as $tab)
+            @foreach(['series','movie','accounts','download list'] as $tab)
                 <x-tab
                     active="{{$page === $tab}}"
                     wire:key="{{$tab}}"

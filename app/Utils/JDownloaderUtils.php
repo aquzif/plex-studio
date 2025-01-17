@@ -5,7 +5,7 @@ namespace App\Utils;
 use App\Connectors\JDownloaderConnector;
 use App\Models\Settings;
 
-class jDownloaderUtils {
+class JDownloaderUtils {
 
     private static ?JDownloaderConnector $jDownloader = null;
 
@@ -16,6 +16,7 @@ class jDownloaderUtils {
             self::$jDownloader = new JDownloaderConnector($settings->jdownloader_email, $settings->jdownloader_password, $settings->jdownloader_device);
         }
     }
+
 
     public static function getPackagesInLinkGrabber($uuids = []){
         self::checkJDownloaderObject();
@@ -59,6 +60,21 @@ class jDownloaderUtils {
         return json_decode(self::$jDownloader->callAction('/downloadsV2/queryPackages'
             ,$opts
         ))->data;
+
+    }
+
+    public static function getHosters() {
+        self::checkJDownloaderObject();
+
+        return json_decode(self::$jDownloader->callAction('/accountsV2/listAccounts',[
+            "enabled" => true,
+            "error" => true,
+            "trafficLeft" => true,
+            "trafficMax" => true,
+            "userName" => true,
+            "valid" => true,
+            "validUntil" => true,
+        ]))->data;
 
     }
 

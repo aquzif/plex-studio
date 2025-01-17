@@ -6,7 +6,7 @@ use App\Connectors\JDownloaderConnector;
 use App\Enums\UrlStatus;
 use App\Models\Settings;
 use App\Models\Url;
-use App\Utils\jDownloaderUtils;
+use App\Utils\JDownloaderUtils;
 use App\Utils\StringUtils;
 use App\Utils\UrlUtils;
 use Illuminate\Support\Facades\Storage;
@@ -186,7 +186,7 @@ class JDownloadUpdate {
             $uuids[] = $url->package_uuid;
         }
 
-        JdownloaderUtils::requestLinkGrabberRefresh($uuids);
+        JDownloaderUtils::requestLinkGrabberRefresh($uuids);
 
 
         foreach ($urls as $url) {
@@ -316,7 +316,7 @@ class JDownloadUpdate {
 
         foreach ($urls as $url) {
             $url->update([
-                'package_name' => jDownloaderUtils::addLinkToGrabber($url->url),
+                'package_name' => JDownloaderUtils::addLinkToGrabber($url->url),
                 'status' => UrlStatus::WAITING_FOR_UUID
             ]);
         }
