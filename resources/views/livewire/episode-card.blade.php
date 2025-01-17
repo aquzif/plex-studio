@@ -95,7 +95,7 @@
                     </x-table-cell>
                     <x-table-cell class="text-center text-wrap" >
                         @if(
-                            $url->status == \App\Enums\UrlStatus::READY
+                            \App\Enums\UrlStatus::from($url->status) == \App\Enums\UrlStatus::READY
                             && $url->auto_valid
                         )
                             <x-button
