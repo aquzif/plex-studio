@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Utils;
+namespace App\Connectors;
 
-class JDownloaderUtils
+class JDownloaderConnector
 {
     private $api_url = "http://api.jdownloader.org";
     private $version = "1.0.20220427";

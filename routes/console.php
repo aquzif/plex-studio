@@ -16,7 +16,10 @@ Schedule::command('sync:tvdb')->dailyAt('12:00');
 
 Artisan::command('schedule:jdownloaderupdate', function () {
     \App\Schedules\JDownloadUpdate::run();
-})->everyMinute();
+})->everyMinute()->withoutOverlapping(10);
+
+
+
 
 
 

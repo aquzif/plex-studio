@@ -16,7 +16,7 @@
 
             @if($episode->release_date)
                 @php
-                    $diffInDays = \Carbon\Carbon::parse($episode->release_date)->diffInDays(\Carbon\Carbon::parse('20.01.2008'));
+                    $diffInDays = \Carbon\Carbon::parse($episode->release_date)->diffInDays(\Carbon\Carbon::now());
                 @endphp
                 @if($diffInDays == 0)
                     <span style="color: {{config('plex.qualityColors.best')}}" >(dzisiaj)</span>
@@ -65,7 +65,9 @@
                         @if($url->auto_valid)
                             <div
                                 {{ Popper::interactive()->arrow('round')->placement('bottom')
-                                   ->pop('Nie sprawdzono')
+                                   ->pop('Sprawdzono: <br/>'.
+                                        Carbon\Carbon::parse($url->last_validated_date)->format('Y-m-d H:i')
+                                    )
                                 }}
                             >
                                 <x-heroicon-o-check-circle class="text-green-500 w-8 h-8 mx-auto"  />
@@ -73,9 +75,8 @@
                         @else
                             <div
                                 {{ Popper::interactive()->arrow('round')->placement('bottom')
-                                    ->pop('Sprawdzono: <br/>'.
-                                        Carbon\Carbon::parse($url->last_validated_date)->format('Y-m-d H:i')
-                                    ) }}
+                                   ->pop('Nie sprawdzono')
+                                    }}
                             >
                                 <x-heroicon-o-x-circle class="text-red-500 w-8 h-8 mx-auto"  />
                             </div>
@@ -92,14 +93,17 @@
                     <x-table-cell class="text-center" >
                         <x-quality-badge :quality="$url->quality" />
                     </x-table-cell>
-                    <x-table-cell class="text-center" >
-                        @if($url->auto_download)
-                            {{$url->auto_download_status}}
+                    <x-table-cell class="text-center text-wrap" >
+                        @if(
+                            $url->status != \App\Enums\UrlStatus::READY
+                            && $url->auto_valid
+                        )
+                            {{\App\Enums\UrlStatus::from($url->status)->description()}}
                         @else
                             <x-button
                                 wire:click="startAutoDownload({{$url->id}})"
                             >
-                                Start auto download
+                                ready to download
                             </x-button>
                         @endif
                     </x-table-cell>

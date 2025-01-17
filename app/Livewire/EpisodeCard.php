@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Enums\UrlStatus;
 use App\Models\Episode;
 use App\Traits\Toastable;
 use App\Utils\Utils;
@@ -67,7 +68,7 @@ class EpisodeCard extends Component
 
         $url->update([
             'auto_download' => true,
-            'auto_download_status' => 'pending'
+            'status' => UrlStatus::WAITING_FOR_START_DOWNLOAD
         ]);
     }
 
