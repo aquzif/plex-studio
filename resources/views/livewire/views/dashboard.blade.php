@@ -64,6 +64,9 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                 $serie->downloaded = true;
                 $serie->save();
                 continue;
+            }else if(!$status['fullyDownloaded']){
+                $serie->downloaded = false;
+                $serie->save();
             }
             $seriesNew[] = $serie;
         }
