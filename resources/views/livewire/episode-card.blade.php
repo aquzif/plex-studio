@@ -96,7 +96,7 @@
                     <x-table-cell class="text-center text-wrap" >
                         @if(
                             $url->status != \App\Enums\UrlStatus::READY
-                            && $url->auto_valid
+                            && !$url->auto_valid
                         )
                             {{\App\Enums\UrlStatus::from($url->status)->description()}}
                         @else
