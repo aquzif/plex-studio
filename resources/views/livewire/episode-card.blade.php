@@ -105,7 +105,9 @@
                             </x-button>
                         @else
                             {{\App\Enums\UrlStatus::from($url->status)->description()}}
-                            @if($url->download_status && $url->download_status !== 'unknown')
+                            @if($url->status === \App\Enums\UrlStatus::DOWNLOADING
+                                && $url->download_status
+                                && $url->download_status !== 'unknown')
                                 <br/>
                                 Status: {{$url->download_status}}
                             @endif
