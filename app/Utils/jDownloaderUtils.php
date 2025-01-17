@@ -48,7 +48,8 @@ class jDownloaderUtils {
             "comment" => true,
             "enabled" => true,
             "eta" => true,
-            "finished" => true
+            "finished" => true,
+            "status" => true
             //"packageUUIDs" => [1737116552286]
         ];
 

@@ -25,6 +25,7 @@ class Url extends Model
         'auto_download_status',
         'status',
         'package_uuid',
+        'download_status'
     ];
 
     protected $casts = [

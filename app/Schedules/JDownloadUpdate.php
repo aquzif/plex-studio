@@ -56,6 +56,7 @@ class JDownloadUpdate {
         self::addNewLinksTojDownloader();
         self::fetchUUIDsToUrls();
         self::checkLinksAvalability();
+        self::getStatusOfUrlsInDownload();
         self::requestCheckLinksAvalability();
         self::startDownloadingLinks();
         self::moveDownloadedFilesToPlex();
@@ -101,6 +102,28 @@ class JDownloadUpdate {
 
 
         dd($res);
+
+    }
+
+    public static function getStatusOfUrlsInDownload() {
+
+        $packages = JDownloaderUtils::getPackagesInDownload();
+
+        foreach ($packages as $package) {
+            if($package?->finished)
+                continue;
+
+            $url = Url::where('package_name',$package->name)->first();
+
+            if(!$url)
+                continue;
+
+            $url->update([
+                'download_status' => $package->status
+            ]);
+
+        }
+
 
     }
 
