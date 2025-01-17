@@ -1,6 +1,7 @@
 <div class="container bg-gray-800 min-h-48 mx-auto mt-4 rounded-xl relative"
      style="width:800px;"
 >
+
     <div
         class="flex flex-row justify-between items-center p-4"
     >
@@ -11,6 +12,29 @@
                 "
         >
             Odcinek {{$episode->episode_order_number}} - {{$episode->name}}
+
+
+            @if($episode->release_date)
+                @php
+                    $diffInDays = \Carbon\Carbon::parse($episode->release_date)->diffInDays(\Carbon\Carbon::parse('20.01.2008'));
+                @endphp
+                @if($diffInDays == 0)
+                    <span style="color: {{config('plex.qualityColors.best')}}" >(dzisiaj)</span>
+                @elseif($diffInDays > 0 && $diffInDays <= 7)
+
+                    <span style="color: {{config('plex.qualityColors.best')}}" >
+                    ({{$diffInDays}} dni temu)
+                </span>
+                @elseif($diffInDays < 0 && $diffInDays >= -7)
+                    <span style="color: {{config('plex.qualityColors.good')}}" >
+                    (za {{abs($diffInDays)}} dni)
+                </span>
+
+                @else
+                    ({{\Carbon\Carbon::parse($episode->release_date)->format('d.m.Y')}})
+                @endif
+            @endif
+
         </h2>
         <div class="flex flex-row items-center gap-2" >
             <x-select

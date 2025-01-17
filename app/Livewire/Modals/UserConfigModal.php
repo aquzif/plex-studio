@@ -50,30 +50,30 @@ class UserConfigModal extends ModalComponent {
     {
         $config = ConfigUtils::getConfig();
 
-        $this->sortBy = $config['sortBy'];
-        $this->sortType = $config['sortType'];
-        $this->showOnlyIncomplete = $config['showOnlyIncomplete'];
-        $this->showOnlyFavourites = $config['showOnlyFavourites'];
-        $this->hideDownloadedEpisodes = $config['hideDownloadedEpisodes'];
+        $this->sortBy = $config['sort_by'];
+        $this->sortType = $config['sort_type'];
+        $this->showOnlyIncomplete = $config['show_only_incomplete'];
+        $this->showOnlyFavourites = $config['show_only_favourites'];
+        $this->hideDownloadedEpisodes = $config['hide_downloaded_episodes'];
     }
 
     public function updatedSortBy()
     {
 
-        ConfigUtils::setConfigValue('sortBy', $this->sortBy);
+        ConfigUtils::setConfigValue('sort_by', $this->sortBy);
         $this->dispatch('refreshShows');
     }
 
     public function updatedSortType()
     {
-        ConfigUtils::setConfigValue('sortType', $this->sortType);
+        ConfigUtils::setConfigValue('sort_type', $this->sortType);
         $this->dispatch('refreshShows');
     }
 
     public function updateInputsData() {
-        ConfigUtils::setConfigValue('showOnlyIncomplete', $this->showOnlyIncomplete);
-        ConfigUtils::setConfigValue('showOnlyFavourites', $this->showOnlyFavourites);
-        ConfigUtils::setConfigValue('hideDownloadedEpisodes', $this->hideDownloadedEpisodes);
+        ConfigUtils::setConfigValue('show_only_incomplete', $this->showOnlyIncomplete);
+        ConfigUtils::setConfigValue('show_only_favourites', $this->showOnlyFavourites);
+        ConfigUtils::setConfigValue('hide_downloaded_episodes', $this->hideDownloadedEpisodes);
         $this->dispatch('refreshShows');
         $this->dispatch('refreshEpisodes');
     }

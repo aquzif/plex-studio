@@ -44,6 +44,17 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
         $this->show->save();
     }
 
+    public function regenerateCatalogue() {
+
+        $name = $this->show->name;
+        $tvdbId = $this->show->tvdb_id;
+
+        $this->show->directory_name = "$name {tvdb:$tvdbId}";
+        $this->show->save();
+        $this->showDirectory = $this->show->directory_name;
+
+    }
+
 
 
 }; ?>
@@ -65,6 +76,14 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                     placeholder="Katalog"
                     class="p-4"
                 />
+                <div class="flex align-items-end flex-wrap content-end" >
+                    <x-button
+                        wire:click="regenerateCatalogue"
+                        wire:confirm="Wyczyści to katalog i napisze od nowa. Czy kontynuować?"
+                    >
+                        generuj
+                    </x-button>
+                </div>
             </div>
 
         </div>

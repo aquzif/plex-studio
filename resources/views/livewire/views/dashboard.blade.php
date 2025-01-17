@@ -53,8 +53,8 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 
         $series = \App\Models\Show::
         where($conditions)->orderBy(
-            $config['sortBy'],
-            $config['sortType'],
+            $config['sort_by'],
+            $config['sort_type'],
         )->get();
 
         $seriesNew = [];

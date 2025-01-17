@@ -45,4 +45,16 @@ class User extends Authenticatable
     public function isAdmin(){
         return $this->role === 'admin';
     }
+
+    public function getSettings() {
+        return UserSettings::where('user_id',$this->id)->firstOrCreate([],[
+            'user_id' => $this->id,
+            'sort_by' => 'name',
+            'sort_type' => 'asc',
+            'hide_downloaded_episodes' => false,
+            'show_only_favourites' => false,
+            'show_only_incomplete' => true,
+        ]);
+    }
+
 }
