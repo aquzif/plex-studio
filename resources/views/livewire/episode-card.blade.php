@@ -16,7 +16,7 @@
 
             @if($episode->release_date)
                 @php
-                    $diffInDays = \Carbon\Carbon::parse($episode->release_date)->diffInDays(\Carbon\Carbon::now());
+                    $diffInDays = \Carbon\Carbon::parse($episode->release_date)->diffInDays(\Carbon\Carbon::today());
                 @endphp
                 @if($diffInDays == 0)
                     <span style="color: {{config('plex.qualityColors.best')}}" >(dzisiaj)</span>
