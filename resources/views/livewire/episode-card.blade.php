@@ -95,16 +95,16 @@
                     </x-table-cell>
                     <x-table-cell class="text-center text-wrap" >
                         @if(
-                            $url->status != \App\Enums\UrlStatus::READY
-                            && !$url->auto_valid
+                            $url->status == \App\Enums\UrlStatus::READY
+                            && $url->auto_valid
                         )
-                            {{\App\Enums\UrlStatus::from($url->status)->description()}}
-                        @else
                             <x-button
                                 wire:click="startAutoDownload({{$url->id}})"
                             >
                                 ready to download
                             </x-button>
+                        @else
+                            {{\App\Enums\UrlStatus::from($url->status)->description()}}
                         @endif
                     </x-table-cell>
                     <x-table-cell >
