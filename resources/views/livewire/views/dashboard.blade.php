@@ -81,6 +81,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
     }
 
     public function changePage($page) {
+        $page = Str::replace(' ', '-',$page);
         $this->redirect('/'.$page);
     }
 
