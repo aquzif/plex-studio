@@ -73,12 +73,13 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                                     {{\App\Utils\UnitsUtils::bytesToHuman($download->bytesLoaded)}}
                                     /
                                     {{ \App\Utils\UnitsUtils::bytesToHuman($download->bytesTotal)  }}
+                                    ({{round($download->bytesLoaded/$download->bytesTotal*100,2)}}%)
                                 </span>
-                                <livewire:progressbar
-                                    wire:key="{{$download->uuid}}"
-                                    max="{{$download->bytesTotal}}"
-                                    value="{{$download->bytesLoaded}}"
-{{--                                    error="{{isset($account->errorType)}}"--}}
+
+                                <x-progress
+                                    :max="$download->bytesTotal"
+                                    :value="$download->bytesLoaded"
+                                    :error="isset($account->errorType)"
                                 />
                             </x-table-cell>
                             <x-table-cell>

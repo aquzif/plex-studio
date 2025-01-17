@@ -1,6 +1,6 @@
+<div
 
-
-<div>
+>
     <div class="relative pt-1">
         <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-600">
             <div style="width:{{$max === 0 || $value === 0 ? 0 : $value/$max*100 }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center
@@ -17,4 +17,3 @@
         </div>
     </div>
 </div>
-

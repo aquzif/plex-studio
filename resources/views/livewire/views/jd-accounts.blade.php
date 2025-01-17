@@ -81,11 +81,10 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                                     /
                                     {{ \App\Utils\UnitsUtils::bytesToHuman($account->trafficMax)  }}
                                 </span>
-                                <livewire:progressbar
-                                    wire:key="{{$account->hostname}}-{{$account->username}}"
-                                    max="{{$account->trafficMax}}"
-                                    value="{{$account->trafficLeft}}"
-                                    error="{{isset($account->errorType)}}"
+                                <x-progress
+                                    :max="$account->trafficMax"
+                                    :value="$account->trafficLeft"
+                                    :error="isset($account->errorType)"
                                 />
                             </x-table-cell>
                             <x-table-cell>
