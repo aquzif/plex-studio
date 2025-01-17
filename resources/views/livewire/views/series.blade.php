@@ -49,7 +49,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
         $name = $this->show->name;
         $tvdbId = $this->show->tvdb_id;
 
-        $this->show->directory_name = "$name {tvdb:$tvdbId}";
+        $this->show->directory_name = "$name {tvdb-$tvdbId}";
         $this->show->save();
         $this->showDirectory = $this->show->directory_name;
 
