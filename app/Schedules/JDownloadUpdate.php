@@ -110,7 +110,7 @@ class JDownloadUpdate {
         $packages = JDownloaderUtils::getPackagesInDownload();
 
         foreach ($packages as $package) {
-            if($package?->finished)
+            if(isset($package->finished) && $package->finished)
                 continue;
 
             $url = Url::where('package_name',$package->name)->first();
