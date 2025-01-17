@@ -105,6 +105,10 @@
                             </x-button>
                         @else
                             {{\App\Enums\UrlStatus::from($url->status)->description()}}
+                            @if($url->download_status)
+                                <br/>
+                                Status: {{$url->download_status}}
+                            @endif
                         @endif
                     </x-table-cell>
                     <x-table-cell >
