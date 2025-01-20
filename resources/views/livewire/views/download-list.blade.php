@@ -83,7 +83,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                                 />
                             </x-table-cell>
                             <x-table-cell>
-                               {{$download->status}}
+                               {{$download?->status ?? 'Oczekiwanie...'}}
                             </x-table-cell>
 
                         </x-table-row>
