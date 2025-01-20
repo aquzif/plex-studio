@@ -23,6 +23,20 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
     public function loadData()
     {
         $this->downloads = \App\Utils\JDownloaderUtils::getPackagesInDownload();
+
+        foreach ($this->downloads as &$item) {
+            $url = \App\Models\Url::where('package_name', $item->name)->first();
+            if(!$url){
+                continue;
+            }
+
+            if($url->episode_id){
+                $episode = \App\Models\Episode::find($url->episode_id);
+                $item->name = $episode->show->name.' - '.$episode->episode_order_number.'. '.$episode->name;
+            }else{
+
+            }
+        }
     }
 
 
