@@ -45,7 +45,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 
 <div wire:poll="loadData" >
 
-    <div class="flex justify-center items-center">
+    <div class="flex justify-center items-center ">
         <div class="flex items-center">
             @foreach(['series','movie','accounts','download list'] as $tab)
                 <x-tab
@@ -69,7 +69,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
             class="text-4xl text-white p-4"
         >jDownloader downloads list</h2>
         <div>
-            <x-table >
+            <x-table  >
                 <x-slot:columns>
                     <x-table-column>Name</x-table-column>
                     <x-table-column>State</x-table-column>
@@ -79,7 +79,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 
                     @foreach($downloads as $download)
                         <x-table-row wire:key="{{$download->uuid}}" >
-                            <x-table-cell>
+                            <x-table-cell class="text-wrap break-after-avoid" >
                                 {{$download->name}}
                             </x-table-cell>
                             <x-table-cell>
@@ -96,7 +96,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                                     :error="isset($account->errorType)"
                                 />
                             </x-table-cell>
-                            <x-table-cell>
+                            <x-table-cell class="text-wrap" >
                                {{$download?->status ?? 'Oczekiwanie...'}}
                             </x-table-cell>
 
