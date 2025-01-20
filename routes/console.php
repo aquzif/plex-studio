@@ -1,5 +1,6 @@
 <?php
 
+use App\Utils\JDownloaderUtils;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -15,6 +16,10 @@ use App\Models\Url;
 Artisan::command('schedule:jdownloaderupdate', function () {
     \App\Schedules\JDownloadUpdate::run();
 })->everyMinute()->withoutOverlapping(10);
+
+Artisan::command('jdownloader:start-download',function() {
+    JDownloaderUtils::startDownload();
+})->everyTenMinutes();
 
 Artisan::command('sync:tvdb',function (){
 

@@ -63,6 +63,14 @@ class JDownloaderUtils {
 
     }
 
+    public static function startDownload() {
+
+        self::checkJDownloaderObject();
+
+        return self::$jDownloader->callAction('/downloadcontroller/start');
+
+    }
+
     public static function getHosters() {
         self::checkJDownloaderObject();
 
