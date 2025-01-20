@@ -80,7 +80,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                     @foreach($downloads as $download)
                         <x-table-row wire:key="{{$download->uuid}}" >
                             <x-table-cell class="text-wrap break-after-avoid" >
-                                {{$download->name}}
+                                {!! $download->name !!}
                             </x-table-cell>
                             <x-table-cell>
                                 <span class="block" >
