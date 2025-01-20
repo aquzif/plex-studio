@@ -32,7 +32,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 
             if($url->episode_id){
                 $episode = \App\Models\Episode::find($url->episode_id);
-                $item->name = $episode->show->name.' - '.$episode->episode_order_number.'. '.$episode->name;
+                $item->name = $episode->show->name.' '.$episode->getSerieSO().' <br/> '.$episode->name;
             }else{
 
             }

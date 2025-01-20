@@ -23,6 +23,11 @@ class Episode extends Model
         'needs_update' => 'boolean',
     ];
 
+    public function getSerieSO(){
+        $season = $this->season;
+        return "S".str_pad($season->season_order_number, 2, '0', STR_PAD_LEFT)."E".str_pad($this->episode_order_number, 2, '0', STR_PAD_LEFT);
+    }
+
     public function urls(){
         return $this->hasMany(Url::class);
     }
