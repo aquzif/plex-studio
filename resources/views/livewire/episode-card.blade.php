@@ -113,40 +113,42 @@
                         @endif
                     </x-table-cell>
                     <x-table-cell >
-                        <div class="flex flex-row" >
-                            <div
-                                {{Popper::interactive()->arrow('round')->placement('bottom')
-                                    ->pop('Oznacz jako nieprawidłowy')
-                                }}
-                            >
-                                <x-icon-button
+                        <div>
+                            <div class="flex flex-row" >
+                                <div
+                                    {{Popper::interactive()->arrow('round')->placement('bottom')
+                                        ->pop('Oznacz jako nieprawidłowy')
+                                    }}
+                                >
+                                    <x-icon-button
 
-                                    wire:click="toggleUrlInvalid({{$url->id}})"
+                                        wire:click="toggleUrlInvalid({{$url->id}})"
+                                    >
+                                        <x-heroicon-o-exclamation-circle class="w-6 h-6 text-yellow-400 " />
+                                    </x-icon-button>
+                                </div>
+                                <div
+                                    {{Popper::interactive()->arrow('round')->placement('bottom')
+                                        ->pop('Oznacz jako pobrane')
+                                    }}
                                 >
-                                    <x-heroicon-o-exclamation-circle class="w-6 h-6 text-yellow-400 " />
-                                </x-icon-button>
-                            </div>
-                            <div
-                                {{Popper::interactive()->arrow('round')->placement('bottom')
-                                    ->pop('Oznacz jako pobrane')
-                                }}
-                            >
-                                <x-icon-button
-                                    wire:click="toggleUrlDownloaded({{$url->id}})"
+                                    <x-icon-button
+                                        wire:click="toggleUrlDownloaded({{$url->id}})"
+                                    >
+                                        <x-heroicon-c-arrow-down-tray :class="'w-6 h-6 '.($url->downloaded ? 'text-red-500':'text-green-500')" />
+                                    </x-icon-button>
+                                </div>
+                                <div
+                                    {{Popper::interactive()->arrow('round')->placement('bottom')
+                                        ->pop('Usuń link')
+                                    }}
                                 >
-                                    <x-heroicon-c-arrow-down-tray :class="'w-6 h-6 '.($url->downloaded ? 'text-red-500':'text-green-500')" />
-                                </x-icon-button>
-                            </div>
-                            <div
-                                {{Popper::interactive()->arrow('round')->placement('bottom')
-                                    ->pop('Usuń link')
-                                }}
-                            >
-                                <x-icon-button
-                                    wire:click="deleteUrl({{$url->id}})"
-                                >
-                                    <x-heroicon-c-trash class="w-6 h-6 text-red-500" />
-                                </x-icon-button>
+                                    <x-icon-button
+                                        wire:click="deleteUrl({{$url->id}})"
+                                    >
+                                        <x-heroicon-c-trash class="w-6 h-6 text-red-500" />
+                                    </x-icon-button>
+                                </div>
                             </div>
                         </div>
                     </x-table-cell>

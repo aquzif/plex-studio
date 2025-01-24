@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UrlStatus;
 use App\Models\Ledger;
 use App\Traits\Modalable;
 use App\Traits\Toastable;
@@ -29,12 +30,12 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
         $this->movieId = $movieId;
         $this->movie = \App\Models\Show::find($movieId);
 
-        if ($this->movie === null){
+        if ($this->movie === null) {
             $this->redirect(route('dashboard'));
             return;
         }
 
-        if($this->movie->type === 'series'){
+        if ($this->movie->type === 'series') {
             $this->redirect(route('series', ['serieId' => $this->movie->id]));
         }
 
@@ -43,19 +44,17 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
         $this->subtitleLanguages = \App\Utils\Utils::getSubtitleLanguages();
 
 
-
-
         $this->qualityInput = $this->movie->quality;
-        if(!$this->movie->audio_languages){
+        if (!$this->movie->audio_languages) {
             $this->audioInput = '[]';
-        }else{
+        } else {
             $this->audioInput = $this->movie->audio_languages;
         }
 
 
-        if(!$this->movie->subtitle_languages){
+        if (!$this->movie->subtitle_languages) {
             $this->subtitleInput = '[]';
-        }else{
+        } else {
             $this->subtitleInput = $this->movie->subtitle_languages;
         }
 
@@ -71,7 +70,6 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
         $this->qualityInput = $this->movie->quality;
 
     }
-
 
 
     //on quality change
@@ -107,48 +105,62 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
         $this->sendSuccessToast('Needs update updated');
     }
 
-    public function toggleMovieDownloaded() {
+    public function toggleMovieDownloaded()
+    {
         $this->movie->update(['downloaded' => !$this->movie->downloaded]);
         $this->sendSuccessToast('Downloaded updated');
     }
 
-    public function openAddLinksModal() {
+    public function openAddLinksModal()
+    {
         $this->showModal('add-links-to-movie-modal');
     }
 
-    public function toggleUrlDownloaded($urlId) {
+    public function toggleUrlDownloaded($urlId)
+    {
         $url = \App\Models\Url::find($urlId);
         $url->update(['downloaded' => !$url->downloaded]);
     }
 
-    public function toggleUrlInvalid($urlId){
+    public function toggleUrlInvalid($urlId)
+    {
         $url = \App\Models\Url::find($urlId);
         $url->update(['invalid' => !$url->invalid]);
     }
 
-    public function deleteUrl($urlId) {
+    public function deleteUrl($urlId)
+    {
         $url = \App\Models\Url::find($urlId);
         $url->delete();
     }
 
+    public function startAutoDownload($urlId)
+    {
+        $url = \App\Models\Url::find($urlId);
+
+        $url->update([
+            'auto_download' => true,
+            'status' => UrlStatus::WAITING_FOR_START_DOWNLOAD
+        ]);
+    }
 
 
 }; ?>
 
-<div >
+<div>
     <livewire:modals.add-links-to-movie-modal
         :movieId="$movieId"
     />
     <div class="container bg-gray-800 min-h-48 mx-auto mt-16 rounded-xl relative"
-        style="width:800px;"
+         style="width:800px;"
     >
         <h2
             class="text-4xl text-white p-4"
         >{{$movie->name}}</h2>
         <x-icon-button class="absolute right-4 top-4"
-            wire:click="openAddLinksModal()"
+                       wire:click="openAddLinksModal()"
         >
-            <x-heroicon-m-plus />
+            <x-heroicon-m-plus/>
         </x-icon-button>
         <div class="grid grid-cols-5 gap-4 px-4">
             <div class="col-span-3">
@@ -211,9 +223,9 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
          style="width:800px;"
     >
         <x-icon-button class="absolute right-4 top-4"
-            wire:click="toggleMovieDownloaded()"
+                       wire:click="toggleMovieDownloaded()"
         >
-            <x-heroicon-c-arrow-down-tray :class="$movie->downloaded?'text-red-500':'text-green-500'"  />
+            <x-heroicon-c-arrow-down-tray :class="$movie->downloaded?'text-red-500':'text-green-500'"/>
         </x-icon-button>
         <h2
             class="
@@ -221,9 +233,9 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                 {{($movie->downloaded?'text-green-500':'text-white')}}
             "
         >Links</h2>
-        <x-table dense="true" >
+        <x-table dense="true">
             <x-slot:columns>
-                <x-table-column class="px-0 w-0" ></x-table-column>
+                <x-table-column class="px-0 w-0"></x-table-column>
                 <x-table-column>Link</x-table-column>
                 <x-table-column>Quality</x-table-column>
                 <x-table-column>Tools</x-table-column>
@@ -231,12 +243,12 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
             <x-slot:rows>
                 @foreach($movie->urls()->get() as $url)
                     <x-table-row>
-                        <x-table-cell  >
+                        <x-table-cell>
                             @if($url->auto_valid)
                                 <div
 
                                 >
-                                    <x-heroicon-o-check-circle class="text-green-500 w-8 h-8 mx-auto"  />
+                                    <x-heroicon-o-check-circle class="text-green-500 w-8 h-8 mx-auto"/>
                                 </div>
                             @else
                                 <div
@@ -245,7 +257,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                                             Carbon\Carbon::parse($url->last_validated_date)->format('Y-m-d H:i')
                                         ) }}
                                 >
-                                    <x-heroicon-o-x-circle class="text-red-500 w-8 h-8 mx-auto"  />
+                                    <x-heroicon-o-x-circle class="text-red-500 w-8 h-8 mx-auto"/>
                                 </div>
 
                             @endif
@@ -257,25 +269,55 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
                                " target="_blank"
                             >{{$url->url}}</a>
                         </x-table-cell>
-                        <x-table-cell class="text-center" >
-                            <x-quality-badge :quality="$url->quality" />
+                        <x-table-cell class="text-center">
+                            <x-quality-badge :quality="$url->quality"/>
                         </x-table-cell>
-                        <x-table-cell class="flex flex-row" >
-                            <x-icon-button
-                                wire:click="toggleUrlInvalid({{$url->id}})"
-                            >
-                                <x-heroicon-o-exclamation-circle class="w-6 h-6 text-yellow-400 " />
-                            </x-icon-button>
-                            <x-icon-button
-                                wire:click="toggleUrlDownloaded({{$url->id}})"
-                            >
-                                <x-heroicon-c-arrow-down-tray :class="'w-6 h-6 '.($url->downloaded ? 'text-red-500':'text-green-500')" />
-                            </x-icon-button>
-                            <x-icon-button
-                                wire:click="deleteUrl({{$url->id}})"
-                            >
-                                <x-heroicon-c-trash class="w-6 h-6 text-red-500" />
-                            </x-icon-button>
+                        <x-table-cell>
+                            <x-table-cell class="text-center text-wrap">
+                                @if(
+                                    \App\Enums\UrlStatus::from($url->status) == \App\Enums\UrlStatus::READY
+                                    && $url->auto_valid
+                                )
+                                    <x-button
+                                        wire:click="startAutoDownload({{$url->id}})"
+                                    >
+                                        ready to download
+                                    </x-button>
+                                @else
+                                    @if(\App\Enums\UrlStatus::from($url->status) === UrlStatus::COMPLETED)
+                                        <span class="text-green-500" >
+                                            {{\App\Enums\UrlStatus::from($url->status)->description()}}
+                                        </span>
+                                    @else
+                                        {{\App\Enums\UrlStatus::from($url->status)->description()}}
+                                    @endif
+                                    @if(\App\Enums\UrlStatus::from($url->status) == \App\Enums\UrlStatus::DOWNLOADING
+                                        && $url->download_status !== 'unknown')
+                                        <br/>
+                                        Status: {{$url->download_status}}
+                                    @endif
+                                @endif
+                            </x-table-cell>
+                        </x-table-cell>
+                        <x-table-cell>
+                            <div class="flex flex-row">
+                                <x-icon-button
+                                    wire:click="toggleUrlInvalid({{$url->id}})"
+                                >
+                                    <x-heroicon-o-exclamation-circle class="w-6 h-6 text-yellow-400 "/>
+                                </x-icon-button>
+                                <x-icon-button
+                                    wire:click="toggleUrlDownloaded({{$url->id}})"
+                                >
+                                    <x-heroicon-c-arrow-down-tray
+                                        :class="'w-6 h-6 '.($url->downloaded ? 'text-red-500':'text-green-500')"/>
+                                </x-icon-button>
+                                <x-icon-button
+                                    wire:click="deleteUrl({{$url->id}})"
+                                >
+                                    <x-heroicon-c-trash class="w-6 h-6 text-red-500"/>
+                                </x-icon-button>
+                            </div>
                         </x-table-cell>
                     </x-table-row>
                 @endforeach

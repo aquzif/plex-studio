@@ -5,7 +5,9 @@ namespace App\Schedules;
 use App\Connectors\JDownloaderConnector;
 use App\Enums\UrlStatus;
 use App\Models\Settings;
+use App\Models\Show;
 use App\Models\Url;
+use App\Utils\FileUtils;
 use App\Utils\JDownloaderUtils;
 use App\Utils\StringUtils;
 use App\Utils\UrlUtils;
@@ -54,6 +56,8 @@ class JDownloadUpdate {
 
 
         self::addNewLinksTojDownloader();
+        self::fetchUUIDsToUrls();
+        self::mergeZipPackages();
         self::fetchUUIDsToUrls();
         self::checkLinksAvalability();
         self::getStatusOfUrlsInDownload();
@@ -113,14 +117,17 @@ class JDownloadUpdate {
             if(isset($package->finished) && $package->finished)
                 continue;
 
-            $url = Url::where('package_name',$package->name)->first();
+            $urls = Url::where('package_name',$package->name)->get();
 
-            if(!$url)
+            if(!$urls)
                 continue;
 
-            $url->update([
-                'download_status' => $package->status
-            ]);
+            foreach ($urls as $url) {
+                $url->update([
+                    'download_status' => $package->status
+                ]);
+            }
+
 
         }
 
@@ -145,7 +152,7 @@ class JDownloadUpdate {
         $urls = Url::where(function ($query) {
                 $query->where('status', UrlStatus::READY)
                     ->orWhere('status', UrlStatus::INSERTED)
-                    ->orWhere('status',UrlStatus::UNAVAILABLE);
+                    ->orWhere('status', UrlStatus::UNAVAILABLE);
             })->get();
 
         $uuids = [];
@@ -220,8 +227,10 @@ class JDownloadUpdate {
             if(!$url)
                 continue;
 
-            $show = $url->episode()->first()->show()->first();
-            $season = $url->episode()->first()->season()->first();
+            $show =
+                $url->episode_id === "0"
+                ? Show::where('id',$url->movie_id)->first()
+                : $url->episode()->first()->show()->first();
 
 
 
@@ -240,8 +249,13 @@ class JDownloadUpdate {
 
                 if($show->type == 'movie') {
                     //TODO
-                    dd('TODO');
+                    $dirPath = config('plex.movies_dir');
+
+                    $fileName = explode('/',$file);
+                    $fileName = $fileName[count($fileName)-1];
+
                 }else{
+                    $season = $url->episode()->first()->season()->first();
                     $showDir = $show->directory_name;
                     $seasonNumber =
                         $season->season_order_number < 10 ? '0'.$season->season_order_number : $season->season_order_number;
@@ -259,68 +273,161 @@ class JDownloadUpdate {
                     $fileName = $fileName[count($fileName)-1];
 
 
-                    Storage::drive('plex')->move(
-                        $file,
-                        UrlUtils::joinPaths(
-                            $dirPath,
-                            $fileName
-                        )
-                    );
-
-                    Storage::drive('plex')->deleteDirectory(
-                        UrlUtils::joinPaths(
-                            config('plex.jd_files_dir'),
-                            $package->name
-                        )
-                    );
-
-                    $packageId = $package->uuid;
-                    $res = self::$jDownloader->callAction(
-                        "/downloadsV2/cleanup?[]&[$packageId]&DELETE_FINISHED&REMOVE_LINKS_ONLY&SELECTED"
-                    );
-
-                    $url->update([
-                        'status' => UrlStatus::COMPLETED
-                    ]);
-
                 }
+
+                Storage::drive('plex')->move(
+                    $file,
+                    UrlUtils::joinPaths(
+                        $dirPath,
+                        $fileName
+                    )
+                );
+
+                Storage::drive('plex')->deleteDirectory(
+                    UrlUtils::joinPaths(
+                        config('plex.jd_files_dir'),
+                        $package->name
+                    )
+                );
+
+                $packageId = $package->uuid;
+                $res = self::$jDownloader->callAction(
+                    "/downloadsV2/cleanup?[]&[$packageId]&DELETE_FINISHED&REMOVE_LINKS_ONLY&SELECTED"
+                );
+
+                $url->update([
+                    'status' => UrlStatus::COMPLETED
+                ]);
             }
         }
     }
 
     public static function fetchUUIDsToUrls() {
-        $urls = Url::where('episode_id', '!=', '0')
-            ->where('status',  UrlStatus::WAITING_FOR_UUID)
-            ->get();
+        $urls = Url::get();
 
         $packages = JDownloaderUtils::getPackagesInLinkGrabber();
+        $links = JDownloaderUtils::getLinksInLinkGrabber();
+
+//        dd($packages,$links,$urls->toArray());
 
         foreach ($urls as $url) {
             foreach ($packages as $package) {
-                if($package->name === $url->package_name){
-                    $url->update([
-                        'status' => UrlStatus::INSERTED,
-                        'package_uuid' => $package->uuid
-                    ]);
+                foreach ($links as $link) {
+                    if(
+                        //$package->name === $url->package_name
+                        $package->uuid == $link->packageUUID
+                        && \Str::lower($link->url) == \Str::lower($url->url)
+                    ){
+                        $url->update([
+                            'status' =>
+                                UrlStatus::from($url->status) === UrlStatus::WAITING_FOR_UUID
+                                    ? UrlStatus::INSERTED : $url->status,
+                            'package_uuid' => $package->uuid
+                        ]);
+                    }
                 }
             }
         }
 
     }
 
+    public static function mergeZipPackages(){
+        $links = JDownloaderUtils::getLinksInLinkGrabber();
+        $packages = JDownloaderUtils::getPackagesInLinkGrabber();
+
+        $mergePackages = [];
+
+        foreach ($links as $link) {
+            foreach ($packages as $package) {
+
+                if($link->packageUUID !== $package->uuid)
+                    continue;
+
+                $ext = FileUtils::getExtensionFromName($link->url);
+
+                if($ext !== 'zip' && $ext !== 'rar')
+                    continue;
+
+                $url = Url::where('url', $link->url)->first();
+
+                if(!FileUtils::isPartArchive($link->url))
+                    continue;
+
+                $nameWithoutPart = explode('/',$link->url);
+                $nameWithoutPart = $nameWithoutPart[count($nameWithoutPart)-1];
+                $nameWithoutPart = explode('.part',$nameWithoutPart)[0];
+                $nameWithoutPart = $nameWithoutPart.'.'.$ext;
+                if(!isset($mergePackages[$nameWithoutPart])){
+                    $mergePackages[$nameWithoutPart] = [
+                        'package_name' => $url->package_name,
+                        'package_uuids' => [$url->package_uuid],
+                        'url_ids' => [$url->id]
+                    ];
+                }else{
+
+                    $mergePackages[$nameWithoutPart]['package_uuids'][] = $url->package_uuid;
+                    $mergePackages[$nameWithoutPart]['url_ids'][] = $url->id;
+                    $mergePackages[$nameWithoutPart]['package_uuids']
+                        = array_unique($mergePackages[$nameWithoutPart]['package_uuids']);
+
+//                    JDownloaderUtils::mergeDownloadPackages(
+//                        $mergePackages[$nameWithoutPart]['package_name'],[
+//                            $mergePackages[$nameWithoutPart]['package_uuid'],
+//                            $url->package_uuid
+//                        ]
+//                    );
+//
+//                    $url->update([
+//                        'package_name' => $mergePackages[$nameWithoutPart]['package_name'],
+//                        'status' => UrlStatus::WAITING_FOR_UUID
+//                    ]);
+
+                }
+
+
+
+            }
+        }
+
+        foreach ($mergePackages as $mergePackage) {
+
+            if(count($mergePackage['package_uuids']) <= 1)
+                continue;
+
+            JDownloaderUtils::mergeDownloadPackages(
+                $mergePackage['package_name'],
+                $mergePackage['package_uuids']
+            );
+
+            foreach ($mergePackage['url_ids'] as $urlId) {
+                $url = Url::find($urlId);
+                $url->update([
+                    'package_name' => $mergePackage['package_name'],
+                    'package_uuid' => null,
+                    'status' => UrlStatus::WAITING_FOR_UUID
+                ]);
+            }
+        }
+
+
+    }
+
     public static function addNewLinksTojDownloader() {
-        $urls = Url::where('episode_id', '!=', '0')
-            ->where('package_name',  null)
+        $urls = Url::where('package_name',  null)
             ->where('status', UrlStatus::CREATED)
             ->get();
 
+
+
+
         foreach ($urls as $url) {
+            $packageName = JDownloaderUtils::addLinkToGrabber($url->url);
             $url->update([
-                'package_name' => JDownloaderUtils::addLinkToGrabber($url->url),
+                'package_name' => $packageName,
                 'status' => UrlStatus::WAITING_FOR_UUID
             ]);
-        }
 
+        }
     }
 
 }

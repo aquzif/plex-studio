@@ -17,6 +17,31 @@ class JDownloaderUtils {
         }
     }
 
+    public static function getLinksInLinkGrabber($uuids = []) {
+        self::checkJDownloaderObject();
+
+        $opts = [
+            "availability" => true,
+            "bytesTotal" => true,
+            "comment" => true,
+            "enabled" => true,
+            "host" => true,
+            "password" => true,
+            "priority" => true,
+            "status" => true,
+            "url" => true,
+            //"packageUUIDs" => [1737116552286]
+
+        ];
+
+        if(count($uuids) > 0)
+            $opts['packageUUIDs'] = $uuids;
+
+        return json_decode(self::$jDownloader->callAction('/linkgrabberv2/queryLinks'
+            ,$opts
+        ))->data;
+
+    }
 
     public static function getPackagesInLinkGrabber($uuids = []){
         self::checkJDownloaderObject();
@@ -83,6 +108,16 @@ class JDownloaderUtils {
             "valid" => true,
             "validUntil" => true,
         ]))->data;
+
+    }
+
+    public static function mergeDownloadPackages($newPackageName = "",$packagesUUIDS = []) {
+        self::checkJDownloaderObject();
+
+        $url = "/linkgrabberv2/movetoNewPackage?[]&[".implode(",",$packagesUUIDS)."]&$newPackageName&$newPackageName";
+        $res = self::$jDownloader->callAction($url);
+
+        return $res;
 
     }
 
