@@ -55,6 +55,7 @@ class JDownloadUpdate {
         self::$jDownloader = new JDownloaderConnector($settings->jdownloader_email, $settings->jdownloader_password, $settings->jdownloader_device);
 
 
+        JDownloaderUtils::refreshAccounts();
         self::addNewLinksTojDownloader();
         self::fetchUUIDsToUrls();
         self::mergeZipPackages();

@@ -19,7 +19,7 @@ Artisan::command('schedule:jdownloaderupdate', function () {
 
 Artisan::command('jdownloader:start-download',function() {
     JDownloaderUtils::startDownload();
-})->everyTenMinutes();
+})->everyMinute()->withoutOverlapping(10);
 
 Artisan::command('sync:tvdb',function (){
 

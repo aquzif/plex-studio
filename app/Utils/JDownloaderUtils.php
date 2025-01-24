@@ -111,6 +111,23 @@ class JDownloaderUtils {
 
     }
 
+
+    public static function refreshAccounts() {
+
+        $hosters = self::getHosters();
+
+        $uuids = array_map(function($item){
+            return $item->uuid;
+        },$hosters);
+        $uuids = implode(",",$uuids);
+
+        $url = "/accountsV2/refreshAccounts?[$uuids]";
+        $res = self::$jDownloader->callAction($url);
+
+        return $res;
+
+
+    }
     public static function mergeDownloadPackages($newPackageName = "",$packagesUUIDS = []) {
         self::checkJDownloaderObject();
 
