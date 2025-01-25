@@ -122,6 +122,7 @@ class JDownloaderUtils {
         $uuids = implode(",",$uuids);
 
         $url = "/accountsV2/refreshAccounts?[$uuids]";
+
         $res = self::$jDownloader->callAction($url);
 
         return $res;
