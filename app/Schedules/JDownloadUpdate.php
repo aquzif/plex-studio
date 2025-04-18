@@ -324,6 +324,7 @@ class JDownloadUpdate {
 //        dd($packages,$links,$urls->toArray());
 
         echo ' - Updating urls at: '.now()->format('Y-m-d H:i:s')."\n";
+        echo count($urls)+count($packages)+count($links)."\n";
         foreach ($urls as $url) {
             foreach ($packages as $package) {
                 foreach ($links as $link) {
