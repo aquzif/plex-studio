@@ -316,11 +316,14 @@ class JDownloadUpdate {
     public static function fetchUUIDsToUrls() {
         $urls = Url::get();
 
+        echo ' - Getting packages at: '.now()->format('Y-m-d H:i:s')."\n";
         $packages = JDownloaderUtils::getPackagesInLinkGrabber();
+        echo ' - Getting links at: '.now()->format('Y-m-d H:i:s')."\n";
         $links = JDownloaderUtils::getLinksInLinkGrabber();
 
 //        dd($packages,$links,$urls->toArray());
 
+        echo ' - Updating urls at: '.now()->format('Y-m-d H:i:s')."\n";
         foreach ($urls as $url) {
             foreach ($packages as $package) {
                 foreach ($links as $link) {
