@@ -310,7 +310,7 @@ class JDownloadUpdate {
                     'status' => UrlStatus::COMPLETED
                 ]);
             }
-        } 
+        }
     }
 
     /*public static function fetchUUIDsToUrls() {
@@ -346,54 +346,63 @@ class JDownloadUpdate {
 
     }*/
 
-    public static function fetchUUIDsToUrls(): void {
-        // 1) Pobieramy tylko to, co nam potrzebne
+    public static function fetchUUIDsToUrls(): void
+    {
         echo ' - Pobieram URL-e: '.now()->format('Y-m-d H:i:s')."\n";
         $urls = Url::select('id', 'url', 'status')->get();
 
-        // 2) POBIERAMY LINKI Z LINKGRABBERA RAZ
-        echo ' - Pobieram linki w LinkGrabberze: '.now()->format('Y-m-d H:i:s')."\n";
+        echo ' - Pobieram linki z LinkGrabbera: '.now()->format('Y-m-d H:i:s')."\n";
         $links = JDownloaderUtils::getLinksInLinkGrabber();
 
-        // 3) Tworzymy mapę: [lowercased_url => packageUUID]
+        // 1) Mapa: lowercase(url) => packageUUID
         $urlToPackage = [];
         foreach ($links as $link) {
-            $lc = mb_strtolower($link->url);
-            // ostatni link nadpisze poprzedni, ale zwykle jeden URL jest w jednym pakiecie
-            $urlToPackage[$lc] = $link->packageUUID;
+            $urlToPackage[mb_strtolower($link->url)] = $link->packageUUID;
         }
 
-        echo ' - Przygotowuję dane do aktualizacji: '.now()->format('Y-m-d H:i:s')."\n";
+        // 2) Przygotowujemy listę aktualizacji
         $updates = [];
-
         foreach ($urls as $url) {
-            $lcUrl = mb_strtolower($url->url);
-            if (!isset($urlToPackage[$lcUrl])) {
+            $lc = mb_strtolower($url->url);
+            if (!isset($urlToPackage[$lc])) {
                 continue;
             }
-
-            $newStatus = UrlStatus::from($url->status) === UrlStatus::WAITING_FOR_UUID
-                ? UrlStatus::INSERTED
-                : $url->status;
-
             $updates[] = [
                 'id'           => $url->id,
-                'status'       => $newStatus,
-                'package_uuid' => $urlToPackage[$lcUrl],
+                'status'       => UrlStatus::from($url->status) === UrlStatus::WAITING_FOR_UUID
+                    ? UrlStatus::INSERTED
+                    : $url->status,
+                'package_uuid' => $urlToPackage[$lc],
             ];
         }
 
-        // 4) Jedno masowe upsert (Laravel 8+)
+        // 3) Jedno masowe UPDATE z CASE WHEN
         if (!empty($updates)) {
-            Url::upsert(
-                $updates,
-                ['id'],                // unikalny klucz
-                ['status', 'package_uuid'] // kolumny do nadpisania
-            );
+            $casesStatus = '';
+            $casesUuid   = '';
+            $ids         = [];
+
+            foreach ($updates as $u) {
+                $ids[] = $u['id'];
+                $casesStatus .= " WHEN {$u['id']} THEN '{$u['status']}'";
+                $casesUuid   .= " WHEN {$u['id']} THEN '{$u['package_uuid']}'";
+            }
+
+            $idsList = implode(',', $ids);
+            $sql = "
+            UPDATE urls
+            SET
+              status = CASE id{$casesStatus} END,
+              package_uuid = CASE id{$casesUuid} END
+            WHERE id IN ({$idsList})
+        ";
+
+            \DB::statement($sql);
         }
 
-        echo ' - Zakończono aktualizację: '.now()->format('Y-m-d H:i:s')."\n";
+        echo ' - Aktualizacja zakończona: '.now()->format('Y-m-d H:i:s')."\n";
     }
+
 
 
     public static function mergeZipPackages(){
