@@ -134,13 +134,12 @@ class JDownloadUpdate {
                 continue;
 
             foreach ($urls as $url) {
-                try{
+
+                if(isset($package->status))
                     $url->update([
                         'download_status' => $package->status
                     ]);
-                }catch (\Exception $e){
-                    dd($url,$package);
-                }
+
             }
 
 
