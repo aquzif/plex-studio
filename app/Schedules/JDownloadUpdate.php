@@ -57,23 +57,23 @@ class JDownloadUpdate {
         //echo  'JDownloader update started' with timestamp
         echo 'JDownloader update started at: '.now()->format('Y-m-d H:i:s')."\n";
         JDownloaderUtils::refreshAccounts();
-        echo 'Adding links to jDownloader' . "\n";
+        echo 'Adding links to jDownloader at '.now()->format('Y-m-d H:i:s')."\n";
         self::addNewLinksTojDownloader();
-        echo 'Fetching UUIDs to URLs' . "\n";
+        echo 'Fetching UUIDs to URLs at '.now()->format('Y-m-d H:i:s')."\n";
         self::fetchUUIDsToUrls();
-        echo 'Merging zip packages' . "\n";
+        echo 'Merging zip packages at '.now()->format('Y-m-d H:i:s')."\n";
         self::mergeZipPackages();
-        echo 'Fetching UUIDs' . "\n";
+        echo 'Fetching UUIDs at '.now()->format('Y-m-d H:i:s')."\n";
         self::fetchUUIDsToUrls();
-        echo 'Checking links avalability' . "\n";
+        echo 'Checking links avalability at '.now()->format('Y-m-d H:i:s')."\n";
         self::checkLinksAvalability();
-        echo 'Checking status of urls in download' . "\n";
+        echo 'Checking status of urls in download at '.now()->format('Y-m-d H:i:s')."\n";
         self::getStatusOfUrlsInDownload();
-        echo 'Requesting check links avalability' . "\n";
+        echo 'Requesting check links avalability at '.now()->format('Y-m-d H:i:s')."\n";
         self::requestCheckLinksAvalability();
-        echo 'Starting downloading links' . "\n";
+        echo 'Starting downloading links at '.now()->format('Y-m-d H:i:s')."\n";
         self::startDownloadingLinks();
-        echo 'Moving downloaded files to plex' . "\n";
+        echo 'Moving downloaded files to plex at '.now()->format('Y-m-d H:i:s')."\n";
         self::moveDownloadedFilesToPlex();
 
 
