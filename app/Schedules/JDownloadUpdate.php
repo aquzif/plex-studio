@@ -54,16 +54,26 @@ class JDownloadUpdate {
         $settings = Settings::first();
         self::$jDownloader = new JDownloaderConnector($settings->jdownloader_email, $settings->jdownloader_password, $settings->jdownloader_device);
 
-
+        //echo  'JDownloader update started' with timestamp
+        echo 'JDownloader update started at: '.now()->format('Y-m-d H:i:s')."\n";
         JDownloaderUtils::refreshAccounts();
+        echo 'Adding links to jDownloader' . "\n";
         self::addNewLinksTojDownloader();
+        echo 'Fetching UUIDs to URLs' . "\n";
         self::fetchUUIDsToUrls();
+        echo 'Merging zip packages' . "\n";
         self::mergeZipPackages();
+        echo 'Fetching UUIDs' . "\n";
         self::fetchUUIDsToUrls();
+        echo 'Checking links avalability' . "\n";
         self::checkLinksAvalability();
+        echo 'Checking status of urls in download' . "\n";
         self::getStatusOfUrlsInDownload();
+        echo 'Requesting check links avalability' . "\n";
         self::requestCheckLinksAvalability();
+        echo 'Starting downloading links' . "\n";
         self::startDownloadingLinks();
+        echo 'Moving downloaded files to plex' . "\n";
         self::moveDownloadedFilesToPlex();
 
 
