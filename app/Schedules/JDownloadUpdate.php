@@ -358,6 +358,7 @@ class JDownloadUpdate {
         $links = JDownloaderUtils::getLinksInLinkGrabber();
 
         // 1) Mapa: lowercase(url) => packageUUID
+        echo ' - Aktualizuje dane: '.now()->format('Y-m-d H:i:s')."\n";
         $urlToPackage = [];
         foreach ($links as $link) {
             $urlToPackage[mb_strtolower($link->url)] = $link->packageUUID;
