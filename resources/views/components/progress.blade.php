@@ -6,6 +6,8 @@
             <div style="width:{{$max === 0 || $value === 0 ? 0 : $value/$max*100 }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center
              @if($error)
                 bg-red-500
+            @elseif($max === 0 || $value === 0)
+                bg-red-500
              @elseif($value/$max < 0.3)
                 bg-red-500
             @elseif($value/$max < 0.6)
