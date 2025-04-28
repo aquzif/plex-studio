@@ -390,7 +390,7 @@ class JDownloadUpdate {
                 $ids[] = $u['id'];
                 try{
                     $casesStatus .= " WHEN {$u['id']} THEN '{$u['status']}'";
-                }catch (\Exception $e){
+                }catch (\Throwable $e){
                     echo ' - Błąd: '.$e->getMessage()."\n";
                     dd($u['status']);
                 }
