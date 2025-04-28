@@ -388,7 +388,12 @@ class JDownloadUpdate {
 
             foreach ($updates as $u) {
                 $ids[] = $u['id'];
-                $casesStatus .= " WHEN {$u['id']} THEN '{$u['status']}'";
+                try{
+                    $casesStatus .= " WHEN {$u['id']} THEN '{$u['status']}'";
+                }catch (\Exception $e){
+                    echo ' - Błąd: '.$e->getMessage()."\n";
+                    dd($u['status']);
+                }
                 $casesUuid   .= " WHEN {$u['id']} THEN '{$u['package_uuid']}'";
             }
 
