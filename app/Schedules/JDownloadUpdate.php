@@ -389,7 +389,7 @@ class JDownloadUpdate {
             foreach ($updates as $u) {
                 $ids[] = $u['id'];
                 try{
-                    $casesStatus .= " WHEN {$u['id']} THEN '{$u['status']}'";
+                    $casesStatus .= " WHEN {$u['id']} THEN '{$u['status']->value}'";
                 }catch (\Throwable $e){
                     echo ' - Błąd: '.$e->getMessage()."\n";
                     dd($u['status']);
