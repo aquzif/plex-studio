@@ -16,7 +16,7 @@ class Season extends Model
         'name',
         'season_order_number',
         'thumb_path',
-        'quality', 'needs_update', 'audio_languages', 'subtitle_languages',
+        'quality', 'needs_update', 'audio_languages', 'subtitle_languages','notes'
     ];
 
     protected $casts = [

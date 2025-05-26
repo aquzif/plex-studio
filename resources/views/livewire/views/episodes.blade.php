@@ -22,9 +22,11 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
     public $audioLanguages = [];
     public $subtitleLanguages = [];
 
+
     public $qualityInput = '';
     public $audioInput = '[]';
     public $subtitleInput = '[]';
+    public $notesInput = "";
     public bool $needsUpdate = false;
 
     public bool $anyEpisodeDownloaded = false;
@@ -44,6 +46,7 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
         }
         $this->season = $this->serie->seasons()->where('id', $seasonId)->first();
 
+        $this->notesInput = $this->season->notes;
         $this->refreshEpisodes();
 
         $this->anyEpisodeDownloaded = false;
@@ -147,6 +150,13 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
 
     }
 
+    public function updatedNotesInput()
+    {
+
+        $this->season->update(['notes' => $this->notesInput]);
+        $this->sendSuccessToast('Notes updated');
+    }
+
 }; ?>
 
 <div >
@@ -172,6 +182,16 @@ new #[\Livewire\Attributes\Layout('layouts.dashboard')] class extends Component 
             />
         </x-icon-button>
         <div class="grid grid-cols-5 gap-4 px-4">
+            <div class="col-span-5">
+                <x-textarea
+                    name="notesInput"
+                    label="Notes"
+                    class="h-32"
+                    wire:model.live.debounce.500ms="notesInput"
+                >
+
+                </x-textarea>
+            </div>
             <div class="col-span-3">
                 <x-select
                     name="audioInput"
